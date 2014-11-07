@@ -5,10 +5,6 @@ import static javax.media.opengl.GL.GL_TEXTURE_2D;
 import static javax.media.opengl.GL.GL_TEXTURE_MAG_FILTER;
 import static javax.media.opengl.GL.GL_TEXTURE_MIN_FILTER;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +17,20 @@ import br.com.abby.util.CameraGL;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
+import br.com.etyllica.core.event.PointerState;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.luvia.core.ApplicationGL;
 import br.com.luvia.loader.TextureLoader;
+import br.com.runaway.collision.CollisionHandler;
 import br.com.runaway.gl.TileGL;
 import br.com.runaway.item.Key;
 import br.com.runaway.player.TopViewPlayer;
 import br.com.runaway.trap.SpikeFloor;
 import br.com.runaway.trap.Trap;
 import br.com.runaway.ui.LifeBar;
+import br.com.tide.input.controller.Controller;
 import br.com.tide.input.controller.EasyController;
 import br.com.vite.editor.MapEditor;
 import br.com.vite.export.MapExporter;
@@ -49,8 +48,6 @@ public class GameApplicationGL extends ApplicationGL {
 	public static final int MAX_LEVEL = 10;
 
 	public static final String PARAM_LEVEL = "level";
-
-	private Texture tile;
 
 	protected float mx = 0;
 	protected float my = 0;
@@ -79,6 +76,10 @@ public class GameApplicationGL extends ApplicationGL {
 
 	private TileGL[][] tiles;
 
+	private CollisionHandler handler;
+
+	private Controller controller;
+
 	public GameApplicationGL(int w, int h) {
 		super(w, h);
 	}
@@ -86,13 +87,17 @@ public class GameApplicationGL extends ApplicationGL {
 	@Override
 	public void load() {
 
-		camera = new CameraGL(0,80,1);
+		loadMap();
 
-		player = new TopViewPlayer(32, 32, null);
+		handler = new CollisionHandler(map.getMap());
+
+		player = new TopViewPlayer(34, 32, handler);
+
+		controller = new EasyController(player);
+		
+		camera = new CameraGL(player.getX(), 32, player.getY());
 
 		lifeBar = new LifeBar(player);
-
-		loadMap();
 
 		loading = 100;
 	}
@@ -184,8 +189,6 @@ public class GameApplicationGL extends ApplicationGL {
 		layer = new BufferedLayer("tiles/tileset.png");
 		layer.cropImage(32*10, 0, 32, 32);
 
-		tile = TextureLoader.getInstance().loadTexture(layer.getBuffer());
-
 		GL2 gl = drawable.getGL().getGL2();		
 
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -198,9 +201,9 @@ public class GameApplicationGL extends ApplicationGL {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
-		double targetx = 0;
-		double targety = 0;
-		double targetz = 0;
+		double targetx = camera.getX()+1;
+		double targety = camera.getY();
+		double targetz = camera.getZ();
 
 		glu.gluLookAt( camera.getX(), camera.getY(), camera.getZ(), targetx, targety, targetz, 0, 1, 0 );
 
@@ -327,7 +330,7 @@ public class GameApplicationGL extends ApplicationGL {
 		gl.glTexCoord2d(0, 1);
 		gl.glVertex3d(x*tileSize, tileSize, y*tileSize+tileSize);
 
-		gl.glEnd();		
+		gl.glEnd();
 
 		texture.disable(gl);
 	}
@@ -381,65 +384,31 @@ public class GameApplicationGL extends ApplicationGL {
 
 	}
 
-	private boolean upArrow = false;
-	private boolean downArrow = false;
-	private boolean leftArrow = false;
-	private boolean rightArrow = false;
-
 	@Override
 	public void update(long now) {
 
-		if(upArrow) {
-			angleX += 1;
-		} else if(downArrow) {
-			angleX -= 1;
-		}
+		player.update(now);
 
-		if(leftArrow) {
-			angleY += 1;
-		} else if(rightArrow) {
-			angleY -= 1;
-		}
+		angleY = player.getAngle();
+		
+		camera.setX(player.getX());
+		camera.setZ(player.getY());
+
+		handler.updateCollision(player);
 
 	}
 
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
 
-		if(event.isKeyDown(KeyEvent.TSK_UP_ARROW)) {
+		controller.handleEvent(event);
 
-			upArrow = true;
-
-		} else if (event.isKeyUp(KeyEvent.TSK_UP_ARROW)) {
-
-			upArrow = false;
+		if(event.isKeyDown(KeyEvent.TSK_A)) {
+			camera.setOffsetX(0.2);
 		}
 
-		if(event.isKeyDown(KeyEvent.TSK_DOWN_ARROW)) {
-
-			downArrow = true;
-
-		} else if(event.isKeyUp(KeyEvent.TSK_DOWN_ARROW)) {
-
-			downArrow = false;
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_LEFT_ARROW)) {
-
-			leftArrow = true;
-
-		} else if(event.isKeyUp(KeyEvent.TSK_LEFT_ARROW)) {
-
-			leftArrow = false;
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_RIGHT_ARROW)) {
-
-			rightArrow = true;
-
-		} else if (event.isKeyUp(KeyEvent.TSK_RIGHT_ARROW)) {
-
-			rightArrow = false;
+		if(event.isKeyDown(KeyEvent.TSK_D)) {
+			camera.setOffsetX(-0.2);
 		}
 
 		if(event.isKeyDown(KeyEvent.TSK_VIRGULA)) {
@@ -455,6 +424,10 @@ public class GameApplicationGL extends ApplicationGL {
 		return GUIEvent.NONE;
 	}
 
+	private float sensitivity = 10;
+	private float lastMouseY = h;
+	private float lastMouseX = w;
+
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
 
@@ -469,6 +442,18 @@ public class GameApplicationGL extends ApplicationGL {
 		if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
 			camera.setZ(camera.getZ()-0.1f);
 			click = false;
+		}
+
+		if(event.getState() == PointerState.MOVE) {
+
+			/*angleX += (my-lastMouseY)/sensitivity;
+
+			lastMouseY = my;
+			
+			angleY += (mx-lastMouseX)/sensitivity;
+
+			lastMouseX = mx;*/
+
 		}
 
 		return GUIEvent.NONE;
@@ -490,11 +475,15 @@ public class GameApplicationGL extends ApplicationGL {
 		GL2 gl = drawable.getGL().getGL2();
 
 		//Transform by Camera
-		lookCamera(drawable.getGL().getGL2());
+		//lookCamera(drawable.getGL().getGL2());
 
-		gl.glRotated(angleX, 1, 0, 0);
+		lookCamera(gl);
+		
 		gl.glRotated(angleY, 0, 1, 0);
-		gl.glRotated(angleZ, 0, 0, 1);
+				
+		/*gl.glRotated(angleX, 1, 0, 0);
+		gl.glRotated(angleY, 0, 1, 0);
+		gl.glRotated(angleZ, 0, 0, 1);*/
 
 		//Draw Scene
 		drawFloor(gl);
@@ -510,6 +499,8 @@ public class GameApplicationGL extends ApplicationGL {
 
 		lifeBar.draw(g);
 
+		g.drawShadow(40, 40, Integer.toString(player.getX()));
+		g.drawShadow(40, 60, Integer.toString(player.getY()));
 	}
 
 }

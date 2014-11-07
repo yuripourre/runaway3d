@@ -391,8 +391,8 @@ public class GameApplicationGL extends ApplicationGL {
 
 		angleY = player.getAngle();
 		
-		camera.setX(player.getX());
-		camera.setZ(player.getY());
+		camera.setX(player.getCenter().getX());
+		camera.setZ(player.getCenter().getY());
 
 		handler.updateCollision(player);
 

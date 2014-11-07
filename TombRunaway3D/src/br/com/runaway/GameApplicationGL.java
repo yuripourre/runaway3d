@@ -95,7 +95,7 @@ public class GameApplicationGL extends ApplicationGL {
 
 		controller = new EasyController(player);
 		
-		camera = new CameraGL(player.getX(), 32, player.getY());
+		camera = new CameraGL(player.getCenter().getX(), 16, player.getCenter().getY());
 
 		lifeBar = new LifeBar(player);
 
@@ -389,7 +389,7 @@ public class GameApplicationGL extends ApplicationGL {
 
 		player.update(now);
 
-		angleY = player.getAngle();
+		angleY = player.getAngle()+player.getStartAngle();
 		
 		camera.setX(player.getCenter().getX());
 		camera.setZ(player.getCenter().getY());
@@ -501,6 +501,18 @@ public class GameApplicationGL extends ApplicationGL {
 
 		g.drawShadow(40, 40, Integer.toString(player.getX()));
 		g.drawShadow(40, 60, Integer.toString(player.getY()));
+		g.drawShadow(40, 80, Double.toString(player.getAngle()));
+		
+		g.setAlpha(60);
+		
+		drawScene(g);
+		
+	}
+	
+	private void drawScene(Graphic g) {
+		map.draw(g);
+
+		player.draw(g);
 	}
 
 }

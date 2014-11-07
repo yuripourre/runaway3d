@@ -6,8 +6,7 @@ import br.com.runaway.GameApplicationGL;
 public class RunawayGL extends Luvia {
 
 	public RunawayGL() {
-		//super(640,480);
-		super(1024,576);
+		super(800,600);
 	}
 
 	// Main program

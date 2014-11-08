@@ -5,6 +5,7 @@ import static javax.media.opengl.GL.GL_TEXTURE_2D;
 import static javax.media.opengl.GL.GL_TEXTURE_MAG_FILTER;
 import static javax.media.opengl.GL.GL_TEXTURE_MIN_FILTER;
 
+import java.awt.Color;
 import java.util.List;
 
 import javax.media.opengl.GL2;
@@ -16,6 +17,7 @@ import br.com.etyllica.layer.BufferedLayer;
 import br.com.luvia.core.ApplicationGL;
 import br.com.luvia.linear.Mesh;
 import br.com.luvia.loader.TextureLoader;
+import br.com.luvia.loader.mesh.MeshLoader;
 import br.com.runaway.gl.TileGL;
 import br.com.runaway.item.Key;
 import br.com.runaway.trap.SpikeFloor;
@@ -36,6 +38,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 	protected TileGL[][] tiles;
 	
 	protected List<Trap> traps;
+	protected List<Mesh> trapModels;
 	
 	protected BufferedLayer layer;
 	
@@ -87,12 +90,19 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 					if("SPIKE".equals(obj.getLabel())) {
 						traps.add(new SpikeFloor(i*map.getTileWidth(), j*map.getTileHeight()));
+						
+						Mesh hole = MeshLoader.getInstance().loadModel("holes.obj");
+						hole.setColor(Color.BLACK);
+						hole.setScale(5);
+						hole.setCoordinates(-(j*map.getTileWidth()+map.getTileWidth()/2), 0, i*map.getTileHeight()+map.getTileHeight()/2);
+						trapModels.add(hole);
+						
 						tiles[j][i].setObjectLayer(null);
 					}
 
 					if("KEY".equals(obj.getLabel())) {
 						key = new Key(i*map.getTileWidth(), j*map.getTileHeight());
-						keyModel.setCoordinates(-j*map.getTileWidth(), 8, i*map.getTileHeight());
+						keyModel.setCoordinates(-(j*map.getTileWidth()+map.getTileWidth()/2), 25, i*map.getTileHeight()+map.getTileHeight()/2);
 						tiles[j][i].setObjectLayer(null);
 					}
 				}

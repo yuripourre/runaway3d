@@ -12,10 +12,10 @@ import br.com.abby.util.CameraGL;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
-import br.com.etyllica.core.event.PointerState;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
+import br.com.luvia.linear.Mesh;
 import br.com.luvia.loader.mesh.MeshLoader;
 import br.com.runaway.application.CommonApplicationGL;
 import br.com.runaway.collision.CollisionHandler;
@@ -40,12 +40,8 @@ public class GameApplicationGL extends CommonApplicationGL {
 	protected boolean click = false;
 
 	private final double startAngle = 180;
-	
-	private double angleX = 0;
 
 	private double angleY = 0;
-
-	private double angleZ = 0;
 
 	private LifeBar lifeBar;
 
@@ -56,7 +52,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 	private CollisionHandler handler;
 
 	private Controller controller;
-	
+
 	public GameApplicationGL(int w, int h) {
 		super(w, h);
 	}
@@ -83,6 +79,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		map.disableCurrentTileShow();
 
 		traps = new ArrayList<Trap>();
+		trapModels = new ArrayList<Mesh>();
 
 		loading = 20;
 		loadTiles(map);
@@ -98,9 +95,9 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 		keyModel = MeshLoader.getInstance().loadModel("key.obj");
 		keyModel.setColor(Color.BLACK);
-		keyModel.setScale(50);
+		keyModel.setScale(8);
 		keyModel.setAngleZ(90);
-		
+
 		loadMap();
 
 		handler = new CollisionHandler(map.getMap());
@@ -108,11 +105,11 @@ public class GameApplicationGL extends CommonApplicationGL {
 		player = new TopViewPlayer(34, 32, handler);
 
 		controller = new EasyController(player);
-		
+
 		camera = new CameraGL(player.getCenter().getX(), 16, player.getCenter().getY());
-		
+
 		lifeBar = new LifeBar(player);
-		
+
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -148,7 +145,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		player.update(now);
 
 		angleY = player.getAngle();
-		
+
 		//Inverted Orientation
 		camera.setX(player.getCenter().getY());
 		camera.setZ(player.getCenter().getX());
@@ -158,64 +155,48 @@ public class GameApplicationGL extends CommonApplicationGL {
 	}
 
 	private double camSpeed = 0.5; 
-	
+
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
 
 		controller.handleEvent(event);
 
 		if(event.isKeyDown(KeyEvent.TSK_A)) {
-		keyModel.setOffsetX(camSpeed);
-			//offsetX+=camSpeed;
+			keyModel.setOffsetX(camSpeed);			
 		}
 
 		if(event.isKeyDown(KeyEvent.TSK_D)) {
-			//offsetX-=camSpeed;
-		keyModel.setOffsetX(-camSpeed);
+			keyModel.setOffsetX(-camSpeed);
 		}
-		
+
 		if(event.isKeyDown(KeyEvent.TSK_W)) {
-			offsetZ+=camSpeed;
-		keyModel.setOffsetZ(camSpeed);
+			keyModel.setOffsetZ(camSpeed);
 		}
-		
+
 		if(event.isKeyDown(KeyEvent.TSK_S)) {
-			offsetZ-=camSpeed;
-		keyModel.setOffsetZ(-camSpeed);
+			keyModel.setOffsetZ(-camSpeed);
 		}
 
 		if(event.isKeyDown(KeyEvent.TSK_N)) {
-			offsetY+=camSpeed;
-		keyModel.setOffsetY(camSpeed);
+			keyModel.setOffsetY(camSpeed);
 		}
-		
+
 		if(event.isKeyDown(KeyEvent.TSK_M)) {
-			offsetY-=camSpeed;
-		keyModel.setOffsetY(-camSpeed);
+			keyModel.setOffsetY(-camSpeed);
 		}
 
 		if(event.isKeyDown(KeyEvent.TSK_VIRGULA)) {
 
-			angleZ += 5;
-		keyModel.setScale(30);
+			keyModel.setScale(30);
 
 		} else if(event.isKeyDown(KeyEvent.TSK_PONTO)) {
 
-		keyModel.setScale(50);
-			angleZ -= 5;
+			keyModel.setScale(50);
 
 		}
 
 		return GUIEvent.NONE;
 	}
-
-	private float sensitivity = 10;
-	private float lastMouseY = h;
-	private float lastMouseX = w;
-	
-	private double offsetX = 0;
-	private double offsetY = 0;
-	private double offsetZ = 0;
 
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
@@ -231,18 +212,6 @@ public class GameApplicationGL extends CommonApplicationGL {
 		if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
 			camera.setZ(camera.getZ()-0.1f);
 			click = false;
-		}
-
-		if(event.getState() == PointerState.MOVE) {
-
-			/*angleX += (my-lastMouseY)/sensitivity;
-
-			lastMouseY = my;
-			
-			angleY += (mx-lastMouseX)/sensitivity;
-
-			lastMouseX = mx;*/
-
 		}
 
 		return GUIEvent.NONE;
@@ -266,11 +235,15 @@ public class GameApplicationGL extends CommonApplicationGL {
 		gl.glRotated(angleY+startAngle, 0, 1, 0);
 		//gl.glTranslated((camera.getX()+offsetX),-(camera.getY()+offsetY),-(camera.getZ()+offsetZ));
 		gl.glTranslated(camera.getX(),-camera.getY(),-camera.getZ());
-				
+
 		//Draw Scene
 		drawFloor(gl);
-		
+
 		keyModel.simpleDraw(gl);
+		
+		for(Mesh trap: trapModels) {
+			trap.simpleDraw(gl);	
+		}		
 
 		gl.glFlush();
 
@@ -284,21 +257,21 @@ public class GameApplicationGL extends CommonApplicationGL {
 		g.drawShadow(40, 40, "px: "+Integer.toString(player.getX()));
 		g.drawShadow(40, 60, "py: "+Integer.toString(player.getY()));
 		g.drawShadow(40, 80, "pa: "+Double.toString(player.getAngle()));
-		
+
 		g.drawShadow(40, 100, "cx: "+Double.toString(camera.getX()));
 		g.drawShadow(40, 120, "cy: "+Double.toString(camera.getY()));
 		g.drawShadow(40, 140, "cz: "+Double.toString(camera.getZ()));
-		
+
 		g.drawShadow(100, 100, "kx: "+Double.toString(keyModel.getX()));
 		g.drawShadow(100, 120, "ky: "+Double.toString(keyModel.getY()));
 		g.drawShadow(100, 140, "kz: "+Double.toString(keyModel.getZ()));
-		
-		g.setAlpha(60);
-		
-		//drawScene(g);
-		
+
+		g.setAlpha(50);
+
+		drawScene(g);
+
 	}
-	
+
 	private void drawScene(Graphic g) {
 		map.draw(g);
 

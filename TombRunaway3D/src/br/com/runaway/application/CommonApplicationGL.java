@@ -5,20 +5,18 @@ import static javax.media.opengl.GL.GL_TEXTURE_2D;
 import static javax.media.opengl.GL.GL_TEXTURE_MAG_FILTER;
 import static javax.media.opengl.GL.GL_TEXTURE_MIN_FILTER;
 
-import java.awt.Color;
 import java.util.List;
 
 import javax.media.opengl.GL2;
 
-import com.jogamp.opengl.util.texture.Texture;
-
 import br.com.abby.util.CameraGL;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.luvia.core.ApplicationGL;
-import br.com.luvia.linear.Mesh;
 import br.com.luvia.loader.TextureLoader;
-import br.com.luvia.loader.mesh.MeshLoader;
+import br.com.runaway.gl.KeyGL;
+import br.com.runaway.gl.SpikeTrapGL;
 import br.com.runaway.gl.TileGL;
+import br.com.runaway.gl.TrapGL;
 import br.com.runaway.item.Key;
 import br.com.runaway.trap.SpikeFloor;
 import br.com.runaway.trap.Trap;
@@ -28,17 +26,19 @@ import br.com.vite.tile.collision.CollisionType;
 import br.com.vite.tile.layer.ImageTileFloor;
 import br.com.vite.tile.layer.ImageTileObject;
 
+import com.jogamp.opengl.util.texture.Texture;
+
 public abstract class CommonApplicationGL extends ApplicationGL {
 
-	private Key key;
-	protected Mesh keyModel;
+	protected Key key;
+	protected KeyGL keyModel;
 	
 	protected MapEditor map;
 		
 	protected TileGL[][] tiles;
 	
 	protected List<Trap> traps;
-	protected List<Mesh> trapModels;
+	protected List<TrapGL> trapModels;
 	
 	protected BufferedLayer layer;
 	
@@ -89,20 +89,23 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 				if(obj != null) {
 
 					if("SPIKE".equals(obj.getLabel())) {
-						traps.add(new SpikeFloor(i*map.getTileWidth(), j*map.getTileHeight()));
 						
-						Mesh hole = MeshLoader.getInstance().loadModel("holes.obj");
-						hole.setColor(Color.BLACK);
-						hole.setScale(5);
-						hole.setCoordinates(-(j*map.getTileWidth()+map.getTileWidth()/2), 0, i*map.getTileHeight()+map.getTileHeight()/2);
-						trapModels.add(hole);
+						Trap spike = new SpikeFloor(i*map.getTileWidth(), j*map.getTileHeight());
+						
+						traps.add(spike);
+						
+						int x = j*map.getTileWidth()+map.getTileWidth()/2;
+						int y = i*map.getTileHeight()+map.getTileHeight()/2;
+						
+						SpikeTrapGL spikeGL = new SpikeTrapGL(x, y, spike);						
+						trapModels.add(spikeGL);
 						
 						tiles[j][i].setObjectLayer(null);
 					}
 
 					if("KEY".equals(obj.getLabel())) {
 						key = new Key(i*map.getTileWidth(), j*map.getTileHeight());
-						keyModel.setCoordinates(-(j*map.getTileWidth()+map.getTileWidth()/2), 25, i*map.getTileHeight()+map.getTileHeight()/2);
+						keyModel.getMesh().setCoordinates(-(j*map.getTileWidth()+map.getTileWidth()/2), 25, i*map.getTileHeight()+map.getTileHeight()/2);
 						tiles[j][i].setObjectLayer(null);
 					}
 				}

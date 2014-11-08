@@ -23,7 +23,7 @@ public class TopViewPlayer extends ActionPlayer implements Drawable, OnAnimation
 
 	private static final int HITBOX_WIDTH = 28;
 
-	private Color color = SVGColor.DARK_GOLDENROD;
+	private Color color = SVGColor.DARK_GREEN;
 
 	private int currentLife = 3;
 

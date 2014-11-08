@@ -1,6 +1,5 @@
 package br.com.runaway;
 
-import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -15,10 +14,13 @@ import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
-import br.com.luvia.linear.Mesh;
-import br.com.luvia.loader.mesh.MeshLoader;
+import br.com.etyllica.linear.PointInt2D;
 import br.com.runaway.application.CommonApplicationGL;
 import br.com.runaway.collision.CollisionHandler;
+import br.com.runaway.gl.KeyGL;
+import br.com.runaway.gl.TrapGL;
+import br.com.runaway.menu.Congratulations;
+import br.com.runaway.menu.GameOver;
 import br.com.runaway.player.TopViewPlayer;
 import br.com.runaway.trap.Trap;
 import br.com.runaway.ui.LifeBar;
@@ -28,7 +30,7 @@ import br.com.vite.export.MapExporter;
 
 public class GameApplicationGL extends CommonApplicationGL {
 
-	public int currentLevel = 1;
+	public int currentLevel = 4;
 
 	public static final int MAX_LEVEL = 10;
 
@@ -79,7 +81,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		map.disableCurrentTileShow();
 
 		traps = new ArrayList<Trap>();
-		trapModels = new ArrayList<Mesh>();
+		trapModels = new ArrayList<TrapGL>();
 
 		loading = 20;
 		loadTiles(map);
@@ -92,11 +94,8 @@ public class GameApplicationGL extends CommonApplicationGL {
 	public void init(GLAutoDrawable drawable) {
 		layer = new BufferedLayer("tiles/tileset.png");
 		layer.cropImage(32*10, 0, 32, 32);
-
-		keyModel = MeshLoader.getInstance().loadModel("key.obj");
-		keyModel.setColor(Color.BLACK);
-		keyModel.setScale(8);
-		keyModel.setAngleZ(90);
+		
+		keyModel = new KeyGL();
 
 		loadMap();
 
@@ -143,6 +142,11 @@ public class GameApplicationGL extends CommonApplicationGL {
 	public void update(long now) {
 
 		player.update(now);
+		keyModel.update(now);
+		
+		checkTrapCollisions(now);
+
+		checkKeyCollision(now);
 
 		angleY = player.getAngle();
 
@@ -153,6 +157,55 @@ public class GameApplicationGL extends CommonApplicationGL {
 		handler.updateCollision(player);
 
 	}
+	
+	private void checkTrapCollisions(long now) {
+
+		PointInt2D center = player.getCenter();
+
+		for(Trap trap : traps) {
+			trap.update(now);
+
+			if(trap.isActive() && !player.isInvincibility()) {
+
+				if(trap.colideCirclePoint(center.getX(), center.getY())) {
+					trapCollision(now);
+				}
+			}
+		}		
+	}
+
+	private void checkKeyCollision(long now) {
+		if(key == null)
+			return;
+
+		PointInt2D center = player.getCenter();
+		
+		if(key.colideCirclePoint(center.getX(), center.getY())) {
+			nextLevel();
+		}
+	}
+
+	private void trapCollision(long now) {
+		player.loseLife(now);
+		
+		if(player.getCurrentLife() < 0)
+			nextApplication = new GameOver(w, h);
+	}
+
+	private void nextLevel() {
+
+		int level = currentLevel;
+
+		if(level < MAX_LEVEL) {
+
+			session.put(PARAM_LEVEL, level+1);
+
+			nextApplication = new GameApplication(w, h, level+1);
+
+		} else {
+			nextApplication = new Congratulations(w, h);
+		}
+	}
 
 	private double camSpeed = 0.5; 
 
@@ -160,40 +213,6 @@ public class GameApplicationGL extends CommonApplicationGL {
 	public GUIEvent updateKeyboard(KeyEvent event) {
 
 		controller.handleEvent(event);
-
-		if(event.isKeyDown(KeyEvent.TSK_A)) {
-			keyModel.setOffsetX(camSpeed);			
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_D)) {
-			keyModel.setOffsetX(-camSpeed);
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_W)) {
-			keyModel.setOffsetZ(camSpeed);
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_S)) {
-			keyModel.setOffsetZ(-camSpeed);
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_N)) {
-			keyModel.setOffsetY(camSpeed);
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_M)) {
-			keyModel.setOffsetY(-camSpeed);
-		}
-
-		if(event.isKeyDown(KeyEvent.TSK_VIRGULA)) {
-
-			keyModel.setScale(30);
-
-		} else if(event.isKeyDown(KeyEvent.TSK_PONTO)) {
-
-			keyModel.setScale(50);
-
-		}
 
 		return GUIEvent.NONE;
 	}
@@ -239,10 +258,10 @@ public class GameApplicationGL extends CommonApplicationGL {
 		//Draw Scene
 		drawFloor(gl);
 
-		keyModel.simpleDraw(gl);
+		keyModel.draw(gl);
 		
-		for(Mesh trap: trapModels) {
-			trap.simpleDraw(gl);	
+		for(TrapGL trap: trapModels) {
+			trap.draw(gl);	
 		}		
 
 		gl.glFlush();
@@ -261,10 +280,6 @@ public class GameApplicationGL extends CommonApplicationGL {
 		g.drawShadow(40, 100, "cx: "+Double.toString(camera.getX()));
 		g.drawShadow(40, 120, "cy: "+Double.toString(camera.getY()));
 		g.drawShadow(40, 140, "cz: "+Double.toString(camera.getZ()));
-
-		g.drawShadow(100, 100, "kx: "+Double.toString(keyModel.getX()));
-		g.drawShadow(100, 120, "ky: "+Double.toString(keyModel.getY()));
-		g.drawShadow(100, 140, "kz: "+Double.toString(keyModel.getZ()));
 
 		g.setAlpha(50);
 

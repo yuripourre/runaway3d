@@ -84,9 +84,9 @@ public class TopViewPlayer extends ActionPlayer implements Drawable, OnAnimation
 	@Override
 	public void draw(Graphic g) {
 
-		//drawHitBox(g);
+		drawHitBox(g);
 
-		layer.draw(g);
+		//layer.draw(g);
 	}
 
 	private void drawHitBox(Graphic g) {

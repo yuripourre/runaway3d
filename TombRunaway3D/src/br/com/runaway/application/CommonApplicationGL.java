@@ -14,6 +14,7 @@ import com.jogamp.opengl.util.texture.Texture;
 import br.com.abby.util.CameraGL;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.linear.Mesh;
 import br.com.luvia.loader.TextureLoader;
 import br.com.runaway.gl.TileGL;
 import br.com.runaway.item.Key;
@@ -28,6 +29,7 @@ import br.com.vite.tile.layer.ImageTileObject;
 public abstract class CommonApplicationGL extends ApplicationGL {
 
 	private Key key;
+	protected Mesh keyModel;
 	
 	protected MapEditor map;
 		
@@ -39,6 +41,10 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 	
 	public CommonApplicationGL(int w, int h) {
 		super(w, h);
+	}
+	
+	public void load() {
+		
 	}
 	
 	protected void loadTiles(MapEditor map) {
@@ -86,6 +92,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 					if("KEY".equals(obj.getLabel())) {
 						key = new Key(i*map.getTileWidth(), j*map.getTileHeight());
+						keyModel.setCoordinates(-j*map.getTileWidth(), 8, i*map.getTileHeight());
 						tiles[j][i].setObjectLayer(null);
 					}
 				}
@@ -121,7 +128,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		double tileSize = 32;
 
 		for(int j = 0; j < map.getLines(); j++) {
-			for(int i = 0; i < map.getLines(); i++) {
+			for(int i = 0; i < map.getColumns(); i++) {
 				TileGL tile = tiles[j][i];
 
 				if(map.getTiles()[j][i].getCollision() == CollisionType.FREE) {

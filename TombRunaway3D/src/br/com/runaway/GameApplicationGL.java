@@ -1,5 +1,6 @@
 package br.com.runaway;
 
+import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ import br.com.etyllica.core.event.PointerState;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
+import br.com.luvia.loader.mesh.MeshLoader;
 import br.com.runaway.application.CommonApplicationGL;
 import br.com.runaway.collision.CollisionHandler;
 import br.com.runaway.player.TopViewPlayer;
@@ -54,28 +56,11 @@ public class GameApplicationGL extends CommonApplicationGL {
 	private CollisionHandler handler;
 
 	private Controller controller;
-
+	
 	public GameApplicationGL(int w, int h) {
 		super(w, h);
 	}
 
-	@Override
-	public void load() {
-
-		loadMap();
-
-		handler = new CollisionHandler(map.getMap());
-
-		player = new TopViewPlayer(34, 32, handler);
-
-		controller = new EasyController(player);
-		
-		camera = new CameraGL(player.getCenter().getX(), 16, player.getCenter().getY());
-
-		lifeBar = new LifeBar(player);
-
-		loading = 100;
-	}
 
 	private void loadMap() {
 
@@ -107,12 +92,28 @@ public class GameApplicationGL extends CommonApplicationGL {
 	}
 
 	@Override
-	public void init(GLAutoDrawable drawable) {
-
+	public void init(GLAutoDrawable drawable) {
 		layer = new BufferedLayer("tiles/tileset.png");
 		layer.cropImage(32*10, 0, 32, 32);
 
-		GL2 gl = drawable.getGL().getGL2();		
+		keyModel = MeshLoader.getInstance().loadModel("key.obj");
+		keyModel.setColor(Color.BLACK);
+		keyModel.setScale(50);
+		keyModel.setAngleZ(90);
+		
+		loadMap();
+
+		handler = new CollisionHandler(map.getMap());
+
+		player = new TopViewPlayer(34, 32, handler);
+
+		controller = new EasyController(player);
+		
+		camera = new CameraGL(player.getCenter().getX(), 16, player.getCenter().getY());
+		
+		lifeBar = new LifeBar(player);
+		
+		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glDepthMask(true);
@@ -164,35 +165,43 @@ public class GameApplicationGL extends CommonApplicationGL {
 		controller.handleEvent(event);
 
 		if(event.isKeyDown(KeyEvent.TSK_A)) {
-			offsetX+=camSpeed;
+		keyModel.setOffsetX(camSpeed);
+			//offsetX+=camSpeed;
 		}
 
 		if(event.isKeyDown(KeyEvent.TSK_D)) {
-			offsetX-=camSpeed;
+			//offsetX-=camSpeed;
+		keyModel.setOffsetX(-camSpeed);
 		}
 		
 		if(event.isKeyDown(KeyEvent.TSK_W)) {
 			offsetZ+=camSpeed;
+		keyModel.setOffsetZ(camSpeed);
 		}
 		
 		if(event.isKeyDown(KeyEvent.TSK_S)) {
 			offsetZ-=camSpeed;
+		keyModel.setOffsetZ(-camSpeed);
 		}
 
 		if(event.isKeyDown(KeyEvent.TSK_N)) {
 			offsetY+=camSpeed;
+		keyModel.setOffsetY(camSpeed);
 		}
 		
 		if(event.isKeyDown(KeyEvent.TSK_M)) {
 			offsetY-=camSpeed;
+		keyModel.setOffsetY(-camSpeed);
 		}
 
 		if(event.isKeyDown(KeyEvent.TSK_VIRGULA)) {
 
 			angleZ += 5;
+		keyModel.setScale(30);
 
 		} else if(event.isKeyDown(KeyEvent.TSK_PONTO)) {
 
+		keyModel.setScale(50);
 			angleZ -= 5;
 
 		}
@@ -255,16 +264,17 @@ public class GameApplicationGL extends CommonApplicationGL {
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glRotated(angleY+startAngle, 0, 1, 0);
-		gl.glTranslated((camera.getX()+offsetX),-(camera.getY()+offsetY),-(camera.getZ()+offsetZ));
-		
+		//gl.glTranslated((camera.getX()+offsetX),-(camera.getY()+offsetY),-(camera.getZ()+offsetZ));
+		gl.glTranslated(camera.getX(),-camera.getY(),-camera.getZ());
+				
 		//Draw Scene
 		drawFloor(gl);
-
+		
+		keyModel.simpleDraw(gl);
 
 		gl.glFlush();
 
 	}
-
 
 	@Override
 	public void draw(Graphic g) {
@@ -279,13 +289,13 @@ public class GameApplicationGL extends CommonApplicationGL {
 		g.drawShadow(40, 120, "cy: "+Double.toString(camera.getY()));
 		g.drawShadow(40, 140, "cz: "+Double.toString(camera.getZ()));
 		
-		g.drawShadow(100, 100, "cx+ox: "+Double.toString(camera.getX()+offsetX));
-		g.drawShadow(100, 120, "cy+oy: "+Double.toString(camera.getY()+offsetY));
-		g.drawShadow(100, 140, "cz+oz: "+Double.toString(camera.getZ()+offsetZ));
+		g.drawShadow(100, 100, "kx: "+Double.toString(keyModel.getX()));
+		g.drawShadow(100, 120, "ky: "+Double.toString(keyModel.getY()));
+		g.drawShadow(100, 140, "kz: "+Double.toString(keyModel.getZ()));
 		
 		g.setAlpha(60);
 		
-		drawScene(g);
+		//drawScene(g);
 		
 	}
 	

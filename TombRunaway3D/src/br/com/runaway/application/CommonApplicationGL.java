@@ -5,7 +5,9 @@ import static javax.media.opengl.GL.GL_TEXTURE_2D;
 import static javax.media.opengl.GL.GL_TEXTURE_MAG_FILTER;
 import static javax.media.opengl.GL.GL_TEXTURE_MIN_FILTER;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.media.opengl.GL2;
 
@@ -16,6 +18,7 @@ import br.com.luvia.loader.TextureLoader;
 import br.com.runaway.gl.KeyGL;
 import br.com.runaway.gl.SpikeTrapGL;
 import br.com.runaway.gl.TileGL;
+import br.com.runaway.gl.TileKey;
 import br.com.runaway.gl.TrapGL;
 import br.com.runaway.item.Key;
 import br.com.runaway.trap.SpikeFloor;
@@ -41,6 +44,8 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 	protected List<TrapGL> trapModels;
 	
 	protected BufferedLayer layer;
+	
+	private Map<TileKey, Texture> textureMap = new HashMap<TileKey, Texture>();
 	
 	public CommonApplicationGL(int w, int h) {
 		super(w, h);
@@ -68,12 +73,30 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		ImageTileFloor floor = tile.getLayer();
 
-		layer.cropImage(floor.getX(), floor.getY(), 32, 32);
-
-		Texture texture = TextureLoader.getInstance().loadTexture(layer.getBuffer());
+		Texture texture = getOrLoad(floor);
 
 		tiles[j][i] = new TileGL(j, i, texture);
 
+	}
+	
+	private Texture getOrLoad(ImageTileFloor floor) {
+		
+		TileKey key = new TileKey(floor.getX(), floor.getY());
+		
+		Texture texture = textureMap.get(key);
+		
+		if(texture == null) {
+			
+			System.out.println("load a different texture");
+			
+			layer.cropImage(floor.getX(), floor.getY(), 32, 32);
+			
+			texture = TextureLoader.getInstance().loadTexture(layer.getBuffer());
+			textureMap.put(key, texture);
+		}
+		
+		return texture;
+		
 	}
 
 	protected void loadObjects(MapEditor map) {

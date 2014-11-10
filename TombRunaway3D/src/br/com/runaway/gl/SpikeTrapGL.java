@@ -5,7 +5,6 @@ import java.awt.Color;
 import javax.media.opengl.GL2;
 
 import br.com.luvia.linear.Mesh;
-import br.com.luvia.loader.mesh.MeshLoader;
 import br.com.runaway.trap.Trap;
 
 public class SpikeTrapGL extends TrapGL {
@@ -21,12 +20,12 @@ public class SpikeTrapGL extends TrapGL {
 		
 		this.trap = trap;
 		
-		hole = MeshLoader.getInstance().loadModel("holes.obj");
+		hole = new Mesh("holes.obj");
 		hole.setColor(Color.BLACK);
 		hole.setScale(5);
 		hole.setCoordinates(-x, 0, y);
 		
-		spike = MeshLoader.getInstance().loadModel("spikes.obj");
+		spike = new Mesh("spikes.obj");
 		spike.setColor(Color.WHITE);
 		spike.setScale(5);
 		spike.setCoordinates(-x, 0, y);

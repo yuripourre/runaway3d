@@ -261,7 +261,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		keyModel.draw(gl);
 		
 		for(TrapGL trap: trapModels) {
-			trap.draw(gl);	
+			trap.draw(gl);
 		}		
 
 		gl.glFlush();

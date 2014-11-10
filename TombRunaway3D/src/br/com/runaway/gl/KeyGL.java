@@ -5,7 +5,6 @@ import java.awt.Color;
 import javax.media.opengl.GL2;
 
 import br.com.luvia.linear.Mesh;
-import br.com.luvia.loader.mesh.MeshLoader;
 
 public class KeyGL {
 	
@@ -14,7 +13,7 @@ public class KeyGL {
 	public KeyGL() {
 		super();
 		
-		mesh = MeshLoader.getInstance().loadModel("key.obj");
+		mesh = new Mesh("key.obj");
 		mesh.setColor(Color.BLACK);
 		mesh.setScale(8);
 		mesh.setAngleZ(90);

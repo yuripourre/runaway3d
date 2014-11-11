@@ -35,31 +35,33 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 	protected Key key;
 	protected KeyGL keyModel;
-	
+
 	protected MapEditor map;
-		
+
 	protected TileGL[][] tiles;
-	
+
 	protected List<Trap> traps;
 	protected List<TrapGL> trapModels;
-	
+
 	protected BufferedLayer layer;
-	
+
 	private Map<TileKey, Texture> textureMap = new HashMap<TileKey, Texture>();
-	
+
 	public CommonApplicationGL(int w, int h) {
 		super(w, h);
 	}
-	
+
 	public void load() {
-		
+
 	}
-	
+
 	protected void loadTiles(MapEditor map) {
 
 		Tile[][] mapTiles = map.getTiles();
 
 		tiles = new TileGL[map.getLines()][map.getColumns()];
+		
+		loadAllTextures();
 
 		for(int j = 0; j < map.getLines(); j++) {
 			for(int i = 0; i < map.getColumns(); i++) {
@@ -68,7 +70,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		}
 
 	}
-	
+
 	private void createTile(int j, int i, Tile tile) {
 
 		ImageTileFloor floor = tile.getLayer();
@@ -78,25 +80,36 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		tiles[j][i] = new TileGL(j, i, texture);
 
 	}
-	
+
 	private Texture getOrLoad(ImageTileFloor floor) {
-		
+
 		TileKey key = new TileKey(floor.getX(), floor.getY());
-		
+
 		Texture texture = textureMap.get(key);
-		
-		if(texture == null) {
-			
-			System.out.println("load a different texture");
-			
-			layer.cropImage(floor.getX(), floor.getY(), 32, 32);
-			
-			texture = TextureLoader.getInstance().loadTexture(layer.getBuffer());
-			textureMap.put(key, texture);
-		}
-		
+
 		return texture;
-		
+
+	}
+
+	private void loadAllTextures() {
+
+		if(!textureMap.isEmpty())
+			return;
+
+		for(int j = 0; j<10; j++) {
+
+			for(int i = 0; i<18; i++) {
+
+				TileKey key = new TileKey(i*32, j*32);
+				
+				layer.cropImage(i*32, j*32, 32, 32);
+
+				Texture texture = TextureLoader.getInstance().loadTexture(layer.getBuffer());
+				textureMap.put(key, texture);
+			}
+
+		}
+
 	}
 
 	protected void loadObjects(MapEditor map) {
@@ -112,17 +125,17 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 				if(obj != null) {
 
 					if("SPIKE".equals(obj.getLabel())) {
-						
+
 						Trap spike = new SpikeFloor(i*map.getTileWidth(), j*map.getTileHeight());
-						
+
 						traps.add(spike);
-						
+
 						int x = j*map.getTileWidth()+map.getTileWidth()/2;
 						int y = i*map.getTileHeight()+map.getTileHeight()/2;
-						
+
 						SpikeTrapGL spikeGL = new SpikeTrapGL(x, y, spike);						
 						trapModels.add(spikeGL);
-						
+
 						tiles[j][i].setObjectLayer(null);
 					}
 
@@ -135,7 +148,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 			}
 		}
 	}
-	
+
 	protected void lookCamera(GL2 gl, CameraGL camera) {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();

@@ -30,7 +30,7 @@ import br.com.vite.export.MapExporter;
 
 public class GameApplicationGL extends CommonApplicationGL {
 
-	public int currentLevel = 4;
+	public int currentLevel = 1;
 
 	public static final int MAX_LEVEL = 10;
 
@@ -55,25 +55,25 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 	private Controller controller;
 
+	private boolean reloading = false;
+	
 	public GameApplicationGL(int w, int h) {
 		super(w, h);
 	}
 
-
 	private void loadMap() {
-
+		
 		int level = currentLevel;
 
 		loadingInfo = "Loading Level "+level;
 		loading = 1;
-
+		
 		try {
 			map = MapExporter.load("map"+level+".json");
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		loading = 10;
 
 		map.disableGridShow();
@@ -93,12 +93,22 @@ public class GameApplicationGL extends CommonApplicationGL {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		layer = new BufferedLayer("tiles/tileset.png");
-		layer.cropImage(32*10, 0, 32, 32);
-		
+				
 		keyModel = new KeyGL();
 
 		loadMap();
 
+		reload();
+
+		GL2 gl = drawable.getGL().getGL2();
+
+		gl.glEnable(GL.GL_DEPTH_TEST);
+		gl.glDepthMask(true);
+		gl.glDepthFunc(GL.GL_LEQUAL);
+		gl.glDepthRange(0.0f, 1.0f);
+	}
+
+	private void reload() {
 		handler = new CollisionHandler(map.getMap());
 
 		player = new TopViewPlayer(34, 32, handler);
@@ -108,13 +118,6 @@ public class GameApplicationGL extends CommonApplicationGL {
 		camera = new CameraGL(player.getCenter().getX(), 16, player.getCenter().getY());
 
 		lifeBar = new LifeBar(player);
-
-		GL2 gl = drawable.getGL().getGL2();
-
-		gl.glEnable(GL.GL_DEPTH_TEST);
-		gl.glDepthMask(true);
-		gl.glDepthFunc(GL.GL_LEQUAL);
-		gl.glDepthRange(0.0f, 1.0f);
 	}
 
 	@Override
@@ -197,23 +200,28 @@ public class GameApplicationGL extends CommonApplicationGL {
 		int level = currentLevel;
 
 		if(level < MAX_LEVEL) {
-
-			session.put(PARAM_LEVEL, level+1);
-
-			nextApplication = new GameApplication(w, h, level+1);
+			
+			reloading = true;
+			currentLevel++;
+			loadMap();
+			reload();
+			reloading = false;
 
 		} else {
 			nextApplication = new Congratulations(w, h);
 		}
 	}
 
-	private double camSpeed = 0.5; 
-
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
 
 		controller.handleEvent(event);
 
+		if(event.isKeyDown(KeyEvent.TSK_1)) {
+			nextLevel();
+		}
+			
+		
 		return GUIEvent.NONE;
 	}
 
@@ -249,6 +257,9 @@ public class GameApplicationGL extends CommonApplicationGL {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 
+		if(reloading)
+			return;		
+		
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glRotated(angleY+startAngle, 0, 1, 0);
@@ -271,6 +282,10 @@ public class GameApplicationGL extends CommonApplicationGL {
 	@Override
 	public void draw(Graphic g) {
 
+		if(reloading) {
+			return;
+		}
+		
 		lifeBar.draw(g);
 
 		g.drawShadow(40, 40, "px: "+Integer.toString(player.getX()));

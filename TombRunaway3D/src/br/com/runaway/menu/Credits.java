@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import javax.media.opengl.GLAutoDrawable;
 
-import br.com.etyllica.animation.listener.OnAnimationFinishListener;
 import br.com.etyllica.animation.scripts.OpacityAnimation;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.PointerEvent;
@@ -13,22 +12,30 @@ import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.ImageLayer;
 import br.com.luvia.core.ApplicationGL;
 
-public class GameOver extends ApplicationGL implements OnAnimationFinishListener {
+public class Credits extends ApplicationGL {
 
 	private ImageLayer background;
 	
-	public GameOver(int w, int h) {
+	private ImageLayer title;
+	
+	private ImageLayer label;
+	
+	public Credits(int w, int h) {
 		super(w, h);
 	}
 
 	@Override
 	public void load() {
 		
-		background = new ImageLayer("menu/gameover.jpg");
+		background = new ImageLayer("menu/background.jpg");
 		
-		OpacityAnimation fadeIn = new OpacityAnimation(background, 10000);
-		fadeIn.setInterval(0, 0xff);
-		fadeIn.setListener(this);
+		title = new ImageLayer(0, 60, "title.png");
+		title.centralizeX(this);
+		
+		label = new ImageLayer("menu/credits.png");
+		label.centralize(this);
+		
+		OpacityAnimation fadeIn = new OpacityAnimation(label, 5000);
 		scene.addAnimation(fadeIn);
 		
 		loading = 100;
@@ -47,11 +54,8 @@ public class GameOver extends ApplicationGL implements OnAnimationFinishListener
 		g.setColor(Color.BLACK);
 		g.fillRect(this);
 		background.draw(g);
-	}
-
-	@Override
-	public void onAnimationFinish(long now) {
-		restartGame();
+		title.draw(g);
+		label.draw(g);
 	}
 	
 	private void restartGame() {

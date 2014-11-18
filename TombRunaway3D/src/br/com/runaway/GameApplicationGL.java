@@ -12,7 +12,6 @@ import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
-import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.linear.PointInt2D;
 import br.com.runaway.application.CommonApplicationGL;
@@ -36,14 +35,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 	public static final String PARAM_LEVEL = "level";
 
-	protected float mx = 0;
-	protected float my = 0;
-
-	protected boolean click = false;
-
 	private final double startAngle = 180;
-
-	private double angleY = 0;
 
 	private LifeBar lifeBar;
 
@@ -56,24 +48,28 @@ public class GameApplicationGL extends CommonApplicationGL {
 	private Controller controller;
 
 	private boolean reloading = false;
-	
-	public GameApplicationGL(int w, int h) {
+
+	protected boolean debug = false;
+
+	public GameApplicationGL(int w, int h, int currentLevel) {
 		super(w, h);
+
+		this.currentLevel = currentLevel;
 	}
 
 	private void loadMap() {
-		
+
 		int level = currentLevel;
 
 		loadingInfo = "Loading Level "+level;
 		loading = 1;
-		
+
 		try {
 			map = MapExporter.load("map"+level+".json");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		loading = 10;
 
 		map.disableGridShow();
@@ -93,7 +89,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		layer = new BufferedLayer("tiles/tileset.png");
-				
+
 		keyModel = new KeyGL();
 
 		loadMap();
@@ -115,7 +111,13 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 		controller = new EasyController(player);
 
-		camera = new CameraGL(player.getCenter().getX(), 16, player.getCenter().getY());
+		//double px = player.getCenter().getX();
+		//double py = player.getCenter().getY();
+		
+		double px = player.getDx()+player.getLayer().getTileW()/2;
+		double py = player.getDy()+player.getLayer().getTileH()/2;
+		
+		camera = new CameraGL(px, 16, py);
 
 		lifeBar = new LifeBar(player);
 	}
@@ -146,21 +148,22 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 		player.update(now);
 		keyModel.update(now);
-		
+
 		checkTrapCollisions(now);
 
 		checkKeyCollision(now);
 
-		angleY = player.getAngle();
-
+		double px = player.getDx()+player.getLayer().getTileW()/2;
+		double py = player.getDy()+player.getLayer().getTileH()/2;
+		
 		//Inverted Orientation
-		camera.setX(player.getCenter().getY());
-		camera.setZ(player.getCenter().getX());
+		camera.setX(py);
+		camera.setZ(px);
 
 		handler.updateCollision(player);
 
 	}
-	
+
 	private void checkTrapCollisions(long now) {
 
 		PointInt2D center = player.getCenter();
@@ -182,7 +185,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 			return;
 
 		PointInt2D center = player.getCenter();
-		
+
 		if(key.colideCirclePoint(center.getX(), center.getY())) {
 			nextLevel();
 		}
@@ -190,7 +193,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 	private void trapCollision(long now) {
 		player.loseLife(now);
-		
+
 		if(player.getCurrentLife() < 0)
 			nextApplication = new GameOver(w, h);
 	}
@@ -200,7 +203,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		int level = currentLevel;
 
 		if(level < MAX_LEVEL) {
-			
+
 			reloading = true;
 			currentLevel++;
 			loadMap();
@@ -217,30 +220,17 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 		controller.handleEvent(event);
 
-		if(event.isKeyDown(KeyEvent.TSK_1)) {
-			nextLevel();
+		if(event.isKeyUp(KeyEvent.TSK_D)) {
+			debug = !debug;
 		}
-			
-		
+
+
 		return GUIEvent.NONE;
 	}
-
+	
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
-
-		mx = event.getX();
-		my = event.getY();
-
-		if(event.isButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) {
-			camera.setZ(camera.getZ()+0.1f);
-			click = true;
-		}
-
-		if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
-			camera.setZ(camera.getZ()-0.1f);
-			click = false;
-		}
-
+		
 		return GUIEvent.NONE;
 	}
 
@@ -259,18 +249,18 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 		if(reloading)
 			return;		
-		
+
 		GL2 gl = drawable.getGL().getGL2();
 
-		gl.glRotated(angleY+startAngle, 0, 1, 0);
-		//gl.glTranslated((camera.getX()+offsetX),-(camera.getY()+offsetY),-(camera.getZ()+offsetZ));
+		gl.glRotated(player.getAngle()+startAngle, 0, 1, 0);
+
 		gl.glTranslated(camera.getX(),-camera.getY(),-camera.getZ());
 
 		//Draw Scene
 		drawFloor(gl);
 
 		keyModel.draw(gl);
-		
+
 		for(TrapGL trap: trapModels) {
 			trap.draw(gl);
 		}		
@@ -285,20 +275,22 @@ public class GameApplicationGL extends CommonApplicationGL {
 		if(reloading) {
 			return;
 		}
-		
+
 		lifeBar.draw(g);
 
-		g.drawShadow(40, 40, "px: "+Integer.toString(player.getX()));
-		g.drawShadow(40, 60, "py: "+Integer.toString(player.getY()));
-		g.drawShadow(40, 80, "pa: "+Double.toString(player.getAngle()));
+		if(debug) {
+			g.drawShadow(40, 40, "px: "+Integer.toString(player.getX()));
+			g.drawShadow(40, 60, "py: "+Integer.toString(player.getY()));
+			g.drawShadow(40, 80, "pa: "+Double.toString(player.getAngle()));
 
-		g.drawShadow(40, 100, "cx: "+Double.toString(camera.getX()));
-		g.drawShadow(40, 120, "cy: "+Double.toString(camera.getY()));
-		g.drawShadow(40, 140, "cz: "+Double.toString(camera.getZ()));
+			g.drawShadow(40, 100, "cx: "+Double.toString(camera.getX()));
+			g.drawShadow(40, 120, "cy: "+Double.toString(camera.getY()));
+			g.drawShadow(40, 140, "cz: "+Double.toString(camera.getZ()));
 
-		g.setAlpha(50);
+			g.setAlpha(50);
 
-		drawScene(g);
+			drawScene(g);
+		}
 
 	}
 

@@ -102,6 +102,22 @@ public class GameApplicationGL extends CommonApplicationGL {
 		gl.glDepthMask(true);
 		gl.glDepthFunc(GL.GL_LEQUAL);
 		gl.glDepthRange(0.0f, 1.0f);
+		 
+		gl.glEnable(GL2.GL_LIGHTING); 
+		gl.glEnable(GL2.GL_LIGHT0);
+
+		float ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f }; 
+		float diffuseLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+		float specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+		float position[] = { -1.5f, 1.0f, -4.0f, 1.0f };
+
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambientLight, 0); 
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, diffuseLight, 0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, specularLight, 0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position, 0);
+		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_CONSTANT_ATTENUATION, 2.0f);
+		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_LINEAR_ATTENUATION, 0.5f);
+		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_QUADRATIC_ATTENUATION, 0.2f);
 	}
 
 	private void reload() {
@@ -118,10 +134,10 @@ public class GameApplicationGL extends CommonApplicationGL {
 		double py = player.getDy()+player.getLayer().getTileH()/2;
 		
 		camera = new CameraGL(px, 16, py);
-
+		
 		lifeBar = new LifeBar(player);
 	}
-
+	
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 
@@ -248,14 +264,17 @@ public class GameApplicationGL extends CommonApplicationGL {
 	public void display(GLAutoDrawable drawable) {
 
 		if(reloading)
-			return;		
+			return;
 
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glRotated(player.getAngle()+startAngle, 0, 1, 0);
-
+				
 		gl.glTranslated(camera.getX(),-camera.getY(),-camera.getZ());
-
+		
+		/*float position[] = { (float)camera.getX(), (float)-camera.getY(), (float)-camera.getZ() };
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position, 0);*/
+		
 		//Draw Scene
 		drawFloor(gl);
 

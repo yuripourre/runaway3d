@@ -25,6 +25,7 @@ import br.com.runaway.trap.Trap;
 import br.com.runaway.ui.LifeBar;
 import br.com.tide.input.controller.Controller;
 import br.com.tide.input.controller.EasyController;
+import br.com.tide.input.controller.JoystickController;
 import br.com.vite.export.MapExporter;
 
 public class GameApplicationGL extends CommonApplicationGL {
@@ -46,6 +47,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 	private CollisionHandler handler;
 
 	private Controller controller;
+	private Controller joystick;
 
 	private boolean reloading = false;
 
@@ -103,21 +105,21 @@ public class GameApplicationGL extends CommonApplicationGL {
 		gl.glDepthFunc(GL.GL_LEQUAL);
 		gl.glDepthRange(0.0f, 1.0f);
 		 
-		gl.glEnable(GL2.GL_LIGHTING); 
-		gl.glEnable(GL2.GL_LIGHT0);
+		gl.glEnable(GL2.GL_LIGHTING);		
 
-		float ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f }; 
-		float diffuseLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-		float specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-		float position[] = { -1.5f, 1.0f, -4.0f, 1.0f };
+		float ambientLight[] = { 0.3f, 0.3f, 0.0f, 1.0f }; 
+		float diffuseLight[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float specularLight[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		
 
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambientLight, 0); 
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, diffuseLight, 0);
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, specularLight, 0);
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position, 0);
-		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_CONSTANT_ATTENUATION, 2.0f);
-		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_LINEAR_ATTENUATION, 0.5f);
-		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_QUADRATIC_ATTENUATION, 0.2f);
+		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_LINEAR_ATTENUATION, 1.0f);
+		
+		gl.glColorMaterial(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE);
+
+		gl.glEnable(GL2.GL_COLOR_MATERIAL);		
 	}
 
 	private void reload() {
@@ -126,6 +128,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		player = new TopViewPlayer(34, 32, handler);
 
 		controller = new EasyController(player);
+		joystick = new JoystickController(player);
 
 		//double px = player.getCenter().getX();
 		//double py = player.getCenter().getY();
@@ -156,7 +159,6 @@ public class GameApplicationGL extends CommonApplicationGL {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 		gl.glLoadIdentity();
-
 	}
 
 	@Override
@@ -235,6 +237,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 	public GUIEvent updateKeyboard(KeyEvent event) {
 
 		controller.handleEvent(event);
+		joystick.handleEvent(event);
 
 		if(event.isKeyUp(KeyEvent.TSK_D)) {
 			debug = !debug;
@@ -256,7 +259,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		gl.glClearColor(1f, 1f, 1f, 1);
+		gl.glClearColor(0f, 0f, 0f, 1);
 
 	}
 
@@ -265,26 +268,30 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 		if(reloading)
 			return;
-
+		
 		GL2 gl = drawable.getGL().getGL2();
-
+		
 		gl.glRotated(player.getAngle()+startAngle, 0, 1, 0);
 				
 		gl.glTranslated(camera.getX(),-camera.getY(),-camera.getZ());
+				
+		float position[] = { (float)-camera.getX(),(float)camera.getY(),(float)camera.getZ(), 1 };
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position, 0);
 		
-		/*float position[] = { (float)camera.getX(), (float)-camera.getY(), (float)-camera.getZ() };
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position, 0);*/
+		keyModel.draw(gl);
+				
+		gl.glEnable(GL2.GL_LIGHTING);
 		
 		//Draw Scene
 		drawFloor(gl);
-
-		keyModel.draw(gl);
 
 		for(TrapGL trap: trapModels) {
 			trap.draw(gl);
 		}		
 
 		gl.glFlush();
+		
+		gl.glDisable(GL2.GL_LIGHTING);
 
 	}
 

@@ -60,7 +60,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		Tile[][] mapTiles = map.getTiles();
 
 		tiles = new TileGL[map.getLines()][map.getColumns()];
-		
+
 		loadAllTextures();
 
 		for(int j = 0; j < map.getLines(); j++) {
@@ -101,7 +101,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 			for(int i = 0; i<18; i++) {
 
 				TileKey key = new TileKey(i*32, j*32);
-				
+
 				layer.cropImage(i*32, j*32, 32, 32);
 
 				Texture texture = TextureLoader.getInstance().loadTexture(layer.getBuffer());
@@ -309,6 +309,22 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		//(0,1)
 		gl.glTexCoord2d(0, 1);
 		gl.glVertex3d(x*tileSize, 0, y*tileSize+tileSize);
+
+		//(0,0)
+		gl.glTexCoord2d(0, 0);
+		gl.glVertex3d(x*tileSize, tileSize, y*tileSize);
+
+		//(1,0)
+		gl.glTexCoord2d(1, 0);
+		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize);
+
+		//(1,1)
+		gl.glTexCoord2d(1, 1);
+		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize+tileSize);
+
+		//(0,1)
+		gl.glTexCoord2d(0, 1);
+		gl.glVertex3d(x*tileSize, tileSize, y*tileSize+tileSize);
 
 		gl.glEnd();
 

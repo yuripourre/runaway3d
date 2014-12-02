@@ -30,8 +30,8 @@ public class RunawayGL extends Luvia {
 		
 		setPath(path+"../");
 		
-		JoystickLoader.getInstance().start(1);
-		new Thread(JoystickLoader.getInstance()).start();
+		//JoystickLoader.getInstance().start(1);
+		//new Thread(JoystickLoader.getInstance()).start();
 		
 		return new MainMenu(w, h);
 		//return new GameApplicationGL(w, h, 1);

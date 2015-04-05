@@ -1,7 +1,5 @@
 package br.com.runaway.menu;
 
-import javax.media.opengl.GLAutoDrawable;
-
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
@@ -9,7 +7,8 @@ import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.gui.Button;
 import br.com.etyllica.gui.label.TextLabel;
 import br.com.etyllica.layer.ImageLayer;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
+import br.com.luvia.core.video.Graphics3D;
 import br.com.runaway.GameApplicationGL;
 
 public class MainMenu extends ApplicationGL {
@@ -62,8 +61,8 @@ public class MainMenu extends ApplicationGL {
 
 	@Override
 	public void draw(Graphic g) {
-		background.draw(g);
-		title.draw(g);
+		background.simpleDraw(g);		
+		title.simpleDraw(g);
 	}
 	
 	public GUIEvent updateMouse(PointerEvent event) {
@@ -83,20 +82,19 @@ public class MainMenu extends ApplicationGL {
 	}
 
 	@Override
-	public void display(GLAutoDrawable arg0) {
+	public void init(Graphics3D g) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void init(GLAutoDrawable arg0) {
+	public void reshape(Graphics3D g, int x, int y, int width, int height) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3,
-			int arg4) {
+	public void display(Graphics3D g) {
 		// TODO Auto-generated method stub
 		
 	}

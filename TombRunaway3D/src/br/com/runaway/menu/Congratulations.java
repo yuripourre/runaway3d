@@ -1,16 +1,13 @@
 package br.com.runaway.menu;
 
-import java.awt.Color;
-
-import javax.media.opengl.GLAutoDrawable;
-
 import br.com.etyllica.animation.scripts.OpacityAnimation;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.ImageLayer;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
+import br.com.luvia.core.video.Graphics3D;
 
 public class Congratulations extends ApplicationGL {
 
@@ -42,9 +39,7 @@ public class Congratulations extends ApplicationGL {
 	
 	@Override
 	public void draw(Graphic g) {
-		g.setColor(Color.BLACK);
-		g.fillRect(this);
-		background.draw(g);
+		background.simpleDraw(g);
 	}
 	
 	private void restartGame() {
@@ -52,19 +47,19 @@ public class Congratulations extends ApplicationGL {
 	}
 
 	@Override
-	public void display(GLAutoDrawable arg0) {
+	public void display(Graphics3D g) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void init(GLAutoDrawable arg0) {
+	public void init(Graphics3D arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3,
+	public void reshape(Graphics3D arg0, int arg1, int arg2, int arg3,
 			int arg4) {
 		// TODO Auto-generated method stub
 		

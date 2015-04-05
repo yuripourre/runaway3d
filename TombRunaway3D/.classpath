@@ -2,12 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/etyllica-4.5-3D.jar"/>
-	<classpathentry kind="lib" path="libs/etyllica-4.5.jar"/>
 	<classpathentry kind="lib" path="libs/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="libs/jogl-all.jar"/>
-	<classpathentry kind="lib" path="libs/luvia-0.8.jar"/>
-	<classpathentry kind="lib" path="libs/veete-0.9.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Luvia"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Etyllica"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Veete"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

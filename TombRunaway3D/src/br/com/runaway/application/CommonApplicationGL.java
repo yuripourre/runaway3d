@@ -13,7 +13,7 @@ import javax.media.opengl.GL2;
 
 import br.com.abby.util.CameraGL;
 import br.com.etyllica.layer.BufferedLayer;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
 import br.com.luvia.loader.TextureLoader;
 import br.com.runaway.gl.KeyGL;
 import br.com.runaway.gl.SpikeTrapGL;
@@ -46,6 +46,8 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 	protected BufferedLayer layer;
 
 	private Map<TileKey, Texture> textureMap = new HashMap<TileKey, Texture>();
+	
+	protected double tileSize = 32;
 
 	public CommonApplicationGL(int w, int h) {
 		super(w, h);
@@ -149,7 +151,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		}
 	}
 
-	protected void lookCamera(GL2 gl, CameraGL camera) {
+	/*protected void lookCamera(GL2 gl, CameraGL camera) {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
@@ -159,7 +161,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		glu.gluLookAt( camera.getX(), camera.getY(), camera.getZ(), targetx, targety, targetz, 0, 1, 0 );
 
-	}
+	}*/
 
 	protected void drawFloor(GL2 gl) {
 
@@ -173,8 +175,6 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 	}
 
 	private void drawGrid(GL2 gl, double x, double y) {
-
-		double tileSize = 32;
 
 		for(int j = 0; j < map.getLines(); j++) {
 			for(int i = 0; i < map.getColumns(); i++) {
@@ -202,6 +202,8 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		texture.enable(gl);
 		texture.bind(gl);
 
+		double height = tileSize*2;
+		
 		gl.glBegin(GL2.GL_QUADS);
 
 		//Lower Face
@@ -219,10 +221,10 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		//Back Face
 		gl.glTexCoord2d(0, 0);
-		gl.glVertex3d(x*tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize, height, y*tileSize);
 
 		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, height, y*tileSize);
 
 		gl.glTexCoord2d(1, 1);
 		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize);
@@ -232,10 +234,10 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		//Left Face
 		gl.glTexCoord2d(0, 0);
-		gl.glVertex3d(x*tileSize, tileSize, y*tileSize+tileSize);
+		gl.glVertex3d(x*tileSize, height, y*tileSize+tileSize);
 
 		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize, height, y*tileSize);
 
 		gl.glTexCoord2d(1, 1);
 		gl.glVertex3d(x*tileSize, 0, y*tileSize);
@@ -245,10 +247,10 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		//Right Face
 		gl.glTexCoord2d(0, 0);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, height, y*tileSize);
 
 		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize+tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, height, y*tileSize+tileSize);
 
 		gl.glTexCoord2d(1, 1);
 		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
@@ -258,10 +260,10 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		//Front Face
 		gl.glTexCoord2d(0, 0);
-		gl.glVertex3d(x*tileSize, tileSize, y*tileSize+tileSize);
+		gl.glVertex3d(x*tileSize, height, y*tileSize+tileSize);
 
 		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize+tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, height, y*tileSize+tileSize);
 
 		gl.glTexCoord2d(1, 1);
 		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
@@ -271,16 +273,16 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		//Upper Face
 		gl.glTexCoord2d(0, 0);
-		gl.glVertex3d(x*tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize, height, y*tileSize);
 
 		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, height, y*tileSize);
 
 		gl.glTexCoord2d(1, 1);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize+tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, height, y*tileSize+tileSize);
 
 		gl.glTexCoord2d(0, 1);
-		gl.glVertex3d(x*tileSize, tileSize, y*tileSize+tileSize);
+		gl.glVertex3d(x*tileSize, height, y*tileSize+tileSize);
 
 		gl.glEnd();
 

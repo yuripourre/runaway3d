@@ -5,15 +5,16 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.glu.GLU;
 
-import br.com.abby.util.CameraGL;
+import br.com.abby.linear.AimPoint;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.linear.PointInt2D;
+import br.com.luvia.core.video.Graphics3D;
 import br.com.runaway.application.CommonApplicationGL;
 import br.com.runaway.collision.CollisionHandler;
 import br.com.runaway.gl.KeyGL;
@@ -23,6 +24,7 @@ import br.com.runaway.menu.GameOver;
 import br.com.runaway.player.TopViewPlayer;
 import br.com.runaway.trap.Trap;
 import br.com.runaway.ui.LifeBar;
+import br.com.tide.input.FirstPersonController;
 import br.com.tide.input.controller.Controller;
 import br.com.tide.input.controller.EasyController;
 import br.com.tide.input.controller.JoystickController;
@@ -40,10 +42,6 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 	private LifeBar lifeBar;
 
-	private TopViewPlayer player;
-
-	private CameraGL camera;
-
 	private CollisionHandler handler;
 
 	private Controller controller;
@@ -52,7 +50,13 @@ public class GameApplicationGL extends CommonApplicationGL {
 	private boolean reloading = false;
 
 	protected boolean debug = false;
-
+	
+	//Player Stuff
+	private TopViewPlayer player;
+	private AimPoint playerAim;
+	
+	private FirstPersonController mouse;
+	
 	public GameApplicationGL(int w, int h, int currentLevel) {
 		super(w, h);
 
@@ -84,12 +88,15 @@ public class GameApplicationGL extends CommonApplicationGL {
 		loading = 20;
 		loadTiles(map);
 		loadObjects(map);
+		
+		mouse = new FirstPersonController();
 
 		loading = 30;
 	}
 
 	@Override
-	public void init(GLAutoDrawable drawable) {
+	public void init(Graphics3D drawable) {
+
 		layer = new BufferedLayer("tiles/tileset.png");
 
 		keyModel = new KeyGL();
@@ -136,15 +143,17 @@ public class GameApplicationGL extends CommonApplicationGL {
 		double px = player.getDx()+player.getLayer().getTileW()/2;
 		double py = player.getDy()+player.getLayer().getTileH()/2;
 		
-		camera = new CameraGL(px, 16, py);
+		//camera = new CameraGL(px, 16, py);
+		playerAim = new AimPoint(-px, 16, py);
 		
 		lifeBar = new LifeBar(player);
 	}
 	
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+	public void reshape(Graphics3D drawable, int x, int y, int width, int height) {
 
-		GL2 gl = drawable.getGL().getGL2();
+		GL2 gl = drawable.getGL2();
+		GLU glu = drawable.getGLU();
 
 		gl.glViewport (x, y, width, height);
 
@@ -175,11 +184,11 @@ public class GameApplicationGL extends CommonApplicationGL {
 		double py = player.getDy()+player.getLayer().getTileH()/2;
 		
 		//Inverted Orientation
-		camera.setX(py);
-		camera.setZ(px);
+		playerAim.setX(-py);
+		playerAim.setZ(px);
 
 		handler.updateCollision(player);
-
+		
 	}
 
 	private void checkTrapCollisions(long now) {
@@ -243,20 +252,26 @@ public class GameApplicationGL extends CommonApplicationGL {
 			debug = !debug;
 		}
 
-
 		return GUIEvent.NONE;
 	}
-	
+		
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
 		
+		mouse.updateMouse(w, h, event);
+		playerAim.setAngleX(mouse.getAngleX());
+		playerAim.setAngleY(mouse.getAngleY());
+		
+		//Walk based on view
+		player.setAngle(360-playerAim.getAngleY()+startAngle);
+				
 		return GUIEvent.NONE;
 	}
 
 	@Override
-	public void preDisplay(GLAutoDrawable drawable, Graphic g) {
+	public void preDisplay(Graphics3D g) {
 
-		GL2 gl = drawable.getGL().getGL2();
+		GL2 gl = g.getGL2();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		gl.glClearColor(0f, 0f, 0f, 1);
@@ -264,18 +279,16 @@ public class GameApplicationGL extends CommonApplicationGL {
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable) {
+	public void display(Graphics3D drawable) {
 
 		if(reloading)
 			return;
 		
 		GL2 gl = drawable.getGL().getGL2();
 		
-		gl.glRotated(player.getAngle()+startAngle, 0, 1, 0);
+		drawable.aimCamera(playerAim);		
 				
-		gl.glTranslated(camera.getX(),-camera.getY(),-camera.getZ());
-				
-		float position[] = { (float)-camera.getX(),(float)camera.getY(),(float)camera.getZ(), 1 };
+		float position[] = { (float)-playerAim.getX(),(float)playerAim.getY(),(float)playerAim.getZ(), 1 };
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position, 0);
 		
 		keyModel.draw(gl);
@@ -309,9 +322,13 @@ public class GameApplicationGL extends CommonApplicationGL {
 			g.drawShadow(40, 60, "py: "+Integer.toString(player.getY()));
 			g.drawShadow(40, 80, "pa: "+Double.toString(player.getAngle()));
 
-			g.drawShadow(40, 100, "cx: "+Double.toString(camera.getX()));
-			g.drawShadow(40, 120, "cy: "+Double.toString(camera.getY()));
-			g.drawShadow(40, 140, "cz: "+Double.toString(camera.getZ()));
+			g.drawShadow(40, 100, "cx: "+Double.toString(playerAim.getX()));
+			g.drawShadow(40, 120, "cy: "+Double.toString(playerAim.getY()));
+			g.drawShadow(40, 140, "cz: "+Double.toString(playerAim.getZ()));
+			
+			g.drawShadow(40, 160, "cx: "+Double.toString(playerAim.getAngleX()));
+			g.drawShadow(40, 180, "cy: "+Double.toString(playerAim.getAngleY()));
+			g.drawShadow(40, 200, "cz: "+Double.toString(playerAim.getAngleZ()));
 
 			g.setAlpha(50);
 

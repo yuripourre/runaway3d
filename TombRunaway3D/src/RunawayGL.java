@@ -1,7 +1,6 @@
-import br.com.etyllica.core.loader.JoystickLoader;
 import br.com.etyllica.util.PathHelper;
 import br.com.luvia.Luvia;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
 import br.com.runaway.GameApplicationGL;
 import br.com.runaway.menu.MainMenu;
 

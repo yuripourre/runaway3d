@@ -1,5 +1,6 @@
 package br.com.runaway;
 
+import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -60,7 +61,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 	public GameApplicationGL(int w, int h, int currentLevel) {
 		super(w, h);
 
-		this.currentLevel = currentLevel;
+		this.currentLevel = currentLevel;		
 	}
 
 	private void loadMap() {
@@ -316,6 +317,8 @@ public class GameApplicationGL extends CommonApplicationGL {
 		}
 
 		lifeBar.draw(g);
+		
+		drawAim(g);
 
 		if(debug) {
 			g.drawShadow(40, 40, "px: "+Integer.toString(player.getX()));
@@ -335,6 +338,12 @@ public class GameApplicationGL extends CommonApplicationGL {
 			drawScene(g);
 		}
 
+	}
+
+	protected void drawAim(Graphic g) {
+		g.setColor(Color.WHITE);
+		g.drawLine(w/2-20, h/2, w/2+20, h/2);
+		g.drawLine(w/2, h/2-20, w/2, h/2+20);
 	}
 
 	private void drawScene(Graphic g) {

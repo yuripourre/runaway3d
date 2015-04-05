@@ -1,7 +1,6 @@
 import br.com.etyllica.util.PathHelper;
 import br.com.luvia.Luvia;
 import br.com.luvia.core.context.ApplicationGL;
-import br.com.runaway.GameApplicationGL;
 import br.com.runaway.menu.MainMenu;
 
 
@@ -11,14 +10,12 @@ public class RunawayGL extends Luvia {
 		super(800,600);
 		
 		setTitle("Tomb Runaway 3D");
-		luviaCore.hideCursor();
+		luviaCore.hideDefaultCursor();
 	}
 
 	// Main program
 	public static void main(String[] args) {
-
 		RunawayGL engine = new RunawayGL();
-				
 		engine.init();
 	}
 	

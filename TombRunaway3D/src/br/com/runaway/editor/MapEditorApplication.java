@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.etyllica.context.IntervalUpdate;
+import br.com.etyllica.context.UpdateIntervalListener;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
@@ -19,7 +19,7 @@ import br.com.vite.export.MapExporter;
 import br.com.vite.map.selection.OrthogonalFloorSelection;
 import br.com.vite.tile.layer.ImageTileObject;
 
-public class MapEditorApplication extends MapApplication implements IntervalUpdate {
+public class MapEditorApplication extends MapApplication implements UpdateIntervalListener {
 
 	final int tileWidth = 32;
 	final int tileHeight = 32;

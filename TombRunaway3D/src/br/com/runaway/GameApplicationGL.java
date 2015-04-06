@@ -91,6 +91,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		loadObjects(map);
 		
 		mouse = new FirstPersonController();
+		hideCursor();
 
 		loading = 30;
 	}

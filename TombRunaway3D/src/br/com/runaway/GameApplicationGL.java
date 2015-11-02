@@ -295,11 +295,12 @@ public class GameApplicationGL extends CommonApplicationGL {
 	@Override
 	public void draw(Graphic g) {
 
-		/*if(reloading) {
+		if(reloading) {
 			return;
 		}
 
 		lifeBar.draw(g);
+		/*
 
 		if(debug) {
 			g.drawShadow(40, 40, "px: "+Integer.toString(player.getX()));

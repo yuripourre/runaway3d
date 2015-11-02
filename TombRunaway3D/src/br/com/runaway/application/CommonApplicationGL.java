@@ -168,7 +168,6 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 		drawGrid(gl,-1,0);
-
 	}
 
 	private void drawGrid(GL2 gl, double x, double y) {
@@ -183,20 +182,20 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 					drawTile(gl, x-j, y+i, tileSize, tile.getTexture());
 				} else {
 
-					boolean rightFace = false;
+					/*boolean rightFace = false;
 
 					if(i<map.getColumns()-1) {
 						rightFace = map.getTiles()[j][i+1].getCollision() == CollisionType.FREE;
-					}
+					}*/
 
-					drawBlock(gl, x-j, y+i, tileSize, tile.getTexture(), rightFace);
+					drawBlock(gl, x-j, y+i, tileSize, tile.getTexture());
 				}
 			}
 		}		
 
 	}
 
-	private void drawBlock(GL2 gl, double x, double y, double tileSize, Texture texture, boolean rightFace) {
+	private void drawBlock(GL2 gl, double x, double y, double tileSize, Texture texture) {
 
 		texture.enable(gl);
 		texture.bind(gl);
@@ -293,22 +292,24 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		gl.glBegin(GL2.GL_QUADS);
 
+		//Draw lower tile
 		//(0,0)
 		gl.glTexCoord2d(0, 0);
 		gl.glVertex3d(x*tileSize, 0, y*tileSize);
+
+		//(0,1)
+		gl.glTexCoord2d(0, 1);
+		gl.glVertex3d(x*tileSize, 0, y*tileSize+tileSize);
+		
+		//(1,1)
+		gl.glTexCoord2d(1, 1);
+		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
 
 		//(1,0)
 		gl.glTexCoord2d(1, 0);
 		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize);
 
-		//(1,1)
-		gl.glTexCoord2d(1, 1);
-		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
-
-		//(0,1)
-		gl.glTexCoord2d(0, 1);
-		gl.glVertex3d(x*tileSize, 0, y*tileSize+tileSize);
-
+		//Draw upper tile
 		//(0,0)
 		gl.glTexCoord2d(0, 0);
 		gl.glVertex3d(x*tileSize, tileSize, y*tileSize);

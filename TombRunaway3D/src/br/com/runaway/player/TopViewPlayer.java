@@ -2,13 +2,13 @@ package br.com.runaway.player;
 
 import java.awt.Color;
 
-import br.com.etyllica.animation.listener.OnAnimationFinishListener;
+import br.com.etyllica.awt.SVGColor;
 import br.com.etyllica.core.Drawable;
+import br.com.etyllica.core.animation.OnAnimationFinishListener;
 import br.com.etyllica.core.graphics.Graphic;
-import br.com.etyllica.core.graphics.SVGColor;
+import br.com.etyllica.core.linear.PointInt2D;
 import br.com.etyllica.layer.AnimatedLayer;
 import br.com.etyllica.layer.Layer;
-import br.com.etyllica.linear.PointInt2D;
 import br.com.runaway.animation.HitAnimation;
 import br.com.tide.action.player.ActionPlayer;
 import br.com.tide.action.player.ActionPlayerListener;

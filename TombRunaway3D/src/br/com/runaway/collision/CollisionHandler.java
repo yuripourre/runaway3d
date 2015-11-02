@@ -1,8 +1,9 @@
 package br.com.runaway.collision;
 
+import br.com.etyllica.core.linear.PointInt2D;
 import br.com.etyllica.layer.Layer;
-import br.com.etyllica.linear.PointInt2D;
 import br.com.runaway.player.TopViewPlayer;
+import br.com.tide.action.player.ActionPlayer;
 import br.com.tide.action.player.ActionPlayerListener;
 import br.com.vite.map.Map;
 import br.com.vite.tile.Tile;
@@ -117,42 +118,42 @@ public class CollisionHandler implements ActionPlayerListener<TopViewPlayer> {
 	}
 
 	@Override
-	public void onWalkForward(TopViewPlayer player) {
+	public void onWalkForward(ActionPlayer<TopViewPlayer> player) {
 		handleCollision = true;
 	}
 
 	@Override
-	public void onWalkBackward(TopViewPlayer player) {
+	public void onWalkBackward(ActionPlayer<TopViewPlayer> player) {
 		handleCollision = true;
 	}
 
 	@Override
-	public void onStopWalkForward(TopViewPlayer player) {
+	public void onStopWalkForward(ActionPlayer<TopViewPlayer> player) {
 		handleCollision = false;
 	}
 
 	@Override
-	public void onStopWalkBackward(TopViewPlayer player) {
+	public void onStopWalkBackward(ActionPlayer<TopViewPlayer> player) {
 		handleCollision = false;
 	}
 
 	@Override
-	public void onTurnLeft(TopViewPlayer player) {
+	public void onTurnLeft(ActionPlayer<TopViewPlayer> player) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void onTurnRight(TopViewPlayer player) {
+	public void onTurnRight(ActionPlayer<TopViewPlayer> player) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void onStopTurnLeft(TopViewPlayer player) {
+	public void onStopTurnLeft(ActionPlayer<TopViewPlayer> player) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void onStopTurnRight(TopViewPlayer player) {
+	public void onStopTurnRight(ActionPlayer<TopViewPlayer> player) {
 		// TODO Auto-generated method stub
 	}
 

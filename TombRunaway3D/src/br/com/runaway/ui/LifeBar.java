@@ -2,8 +2,8 @@ package br.com.runaway.ui;
 
 import java.awt.Color;
 
+import br.com.etyllica.awt.SVGColor;
 import br.com.etyllica.core.graphics.Graphic;
-import br.com.etyllica.core.graphics.SVGColor;
 import br.com.runaway.player.TopViewPlayer;
 
 public class LifeBar {

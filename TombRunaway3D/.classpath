@@ -26,7 +26,8 @@
 	<classpathentry kind="lib" path="/Luvia/libs/jogl-all-natives-windows-i586.jar"/>
 	<classpathentry kind="lib" path="/Luvia/libs/jogl-all.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Etyllica"/>
-	<classpathentry kind="lib" path="/TombRunaway/libs/veete-0.9.jar"/>
-	<classpathentry kind="lib" path="/TombRunaway/libs/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="/home/death/git/runaway/libs/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="/home/death/git/runaway/libs/tide-0.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Veete"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

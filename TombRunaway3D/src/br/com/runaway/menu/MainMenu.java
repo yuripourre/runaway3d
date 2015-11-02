@@ -1,33 +1,30 @@
 package br.com.runaway.menu;
 
-import javax.media.opengl.GLAutoDrawable;
-
-import br.com.etyllica.core.event.GUIEvent;
+import br.com.etyllica.core.event.MouseButton;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
-import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.gui.Button;
 import br.com.etyllica.gui.label.TextLabel;
 import br.com.etyllica.layer.ImageLayer;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
+import br.com.luvia.core.video.Graphics3D;
 import br.com.runaway.GameApplicationGL;
 
 public class MainMenu extends ApplicationGL {
 
 	private ImageLayer background;
-
 	private ImageLayer title;
 	
 	private static final int INITIAL_LEVEL = 1;
 	
 	private Button playButton;
-	
 	private Button creditsButton;
 	
 	public MainMenu(int w, int h) {
 		super(w, h);
 		
-		loadApplication = new RunawayLoading(x, y, w, h);		
+		loadApplication = new RunawayLoading(x, y, w, h);
+		clearBeforeDraw = false;
 	}
 
 	public void doOpenGame() {
@@ -35,12 +32,11 @@ public class MainMenu extends ApplicationGL {
 	}
 
 	public void doOpenCredits() {
-		nextApplication = new Credits(w, h);		
+		nextApplication = new Credits(w, h);	
 	}
 
 	@Override
 	public void load() {
-
 		background = new ImageLayer("menu/background.jpg");
 
 		title = new ImageLayer(0, 60, "title.png");
@@ -54,19 +50,19 @@ public class MainMenu extends ApplicationGL {
 		creditsButton = new Button(w/2-buttonWidth/2, 380, buttonWidth, 60);
 		creditsButton.setLabel(new TextLabel("Creditos"));
 		
-		add(playButton);
-		add(creditsButton);
+		addView(playButton);
+		addView(creditsButton);
 		
 		loading = 100;
 	}
 
 	@Override
-	public void draw(Graphic g) {
+	public void draw(Graphic g) {		
 		background.draw(g);
 		title.draw(g);
 	}
 	
-	public GUIEvent updateMouse(PointerEvent event) {
+	public void updateMouse(PointerEvent event) {
 		
 		if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
 			
@@ -78,24 +74,22 @@ public class MainMenu extends ApplicationGL {
 				doOpenCredits();
 			}
 		}
-		
-		return GUIEvent.NONE;		
 	}
 
 	@Override
-	public void display(GLAutoDrawable arg0) {
+	public void display(Graphics3D gl) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void init(GLAutoDrawable arg0) {
+	public void init(Graphics3D gl) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3,
+	public void reshape(Graphics3D gl, int arg1, int arg2, int arg3,
 			int arg4) {
 		// TODO Auto-generated method stub
 		

@@ -20,9 +20,7 @@ public class KeyGL {
 	}
 	
 	public void update(long now) {
-		
-		mesh.setOffsetAngleY(2);
-		
+		mesh.offsetAngleY(2);
 	}
 	
 	public Mesh getMesh() {
@@ -30,7 +28,7 @@ public class KeyGL {
 	}
 	
 	public void draw(GL2 gl) {
-		mesh.simpleDraw(gl);
+		mesh.draw(gl);
 	}
 	
 }

@@ -1,7 +1,7 @@
-import br.com.etyllica.core.loader.JoystickLoader;
+import br.com.etyllica.loader.JoystickLoader;
 import br.com.etyllica.util.PathHelper;
 import br.com.luvia.Luvia;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
 import br.com.runaway.GameApplicationGL;
 import br.com.runaway.menu.MainMenu;
 
@@ -17,24 +17,22 @@ public class RunawayGL extends Luvia {
 
 	// Main program
 	public static void main(String[] args) {
-
 		RunawayGL engine = new RunawayGL();
-				
 		engine.init();
 	}
 	
 	@Override
 	public ApplicationGL startApplication() {
 
-		String path = PathHelper.currentDirectory();
+		//String path = PathHelper.currentDirectory();
 		
-		setPath(path+"../");
+		initialSetup("");
 		
-		JoystickLoader.getInstance().start(1);
-		new Thread(JoystickLoader.getInstance()).start();
+		//JoystickLoader.getInstance().init(1);
+		//new Thread(JoystickLoader.getInstance()).start();
 		
-		return new MainMenu(w, h);
-		//return new GameApplicationGL(w, h, 1);
+		//return new MainMenu(w, h);
+		return new GameApplicationGL(w, h, 1);
 	}
 
 }

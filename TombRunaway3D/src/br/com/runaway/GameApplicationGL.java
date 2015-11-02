@@ -5,15 +5,14 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.glu.GLU;
 
-import br.com.abby.util.CameraGL;
-import br.com.etyllica.core.event.GUIEvent;
+import br.com.abby.linear.Camera3D;
 import br.com.etyllica.core.event.KeyEvent;
-import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
+import br.com.etyllica.core.linear.PointInt2D;
 import br.com.etyllica.layer.BufferedLayer;
-import br.com.etyllica.linear.PointInt2D;
+import br.com.luvia.core.video.Graphics3D;
 import br.com.runaway.application.CommonApplicationGL;
 import br.com.runaway.collision.CollisionHandler;
 import br.com.runaway.gl.KeyGL;
@@ -42,7 +41,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 	private TopViewPlayer player;
 
-	private CameraGL camera;
+	private Camera3D camera;
 
 	private CollisionHandler handler;
 
@@ -89,7 +88,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 	}
 
 	@Override
-	public void init(GLAutoDrawable drawable) {
+	public void init(Graphics3D drawable) {		
 		layer = new BufferedLayer("tiles/tileset.png");
 
 		keyModel = new KeyGL();
@@ -118,8 +117,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		gl.glLightf(GL2.GL_LIGHT0, GL2.GL_LINEAR_ATTENUATION, 1.0f);
 		
 		gl.glColorMaterial(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE);
-
-		gl.glEnable(GL2.GL_COLOR_MATERIAL);		
+		gl.glEnable(GL2.GL_COLOR_MATERIAL);
 	}
 
 	private void reload() {
@@ -136,15 +134,16 @@ public class GameApplicationGL extends CommonApplicationGL {
 		double px = player.getDx()+player.getLayer().getTileW()/2;
 		double py = player.getDy()+player.getLayer().getTileH()/2;
 		
-		camera = new CameraGL(px, 16, py);
+		camera = new Camera3D(px, 16, py);
 		
 		lifeBar = new LifeBar(player);
 	}
 	
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+	public void reshape(Graphics3D drawable, int x, int y, int width, int height) {
 
 		GL2 gl = drawable.getGL().getGL2();
+		GLU glu = drawable.getGLU();
 
 		gl.glViewport (x, y, width, height);
 
@@ -179,7 +178,6 @@ public class GameApplicationGL extends CommonApplicationGL {
 		camera.setZ(px);
 
 		handler.updateCollision(player);
-
 	}
 
 	private void checkTrapCollisions(long now) {
@@ -234,37 +232,26 @@ public class GameApplicationGL extends CommonApplicationGL {
 	}
 
 	@Override
-	public GUIEvent updateKeyboard(KeyEvent event) {
+	public void updateKeyboard(KeyEvent event) {
 
 		controller.handleEvent(event);
 		joystick.handleEvent(event);
 
-		if(event.isKeyUp(KeyEvent.TSK_D)) {
+		if(event.isKeyUp(KeyEvent.VK_D)) {
 			debug = !debug;
 		}
-
-
-		return GUIEvent.NONE;
-	}
-	
-	@Override
-	public GUIEvent updateMouse(PointerEvent event) {
-		
-		return GUIEvent.NONE;
 	}
 
 	@Override
-	public void preDisplay(GLAutoDrawable drawable, Graphic g) {
-
-		GL2 gl = drawable.getGL().getGL2();
+	public void preDisplay(Graphics3D g) {
+		GL2 gl = g.getGL2();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		gl.glClearColor(0f, 0f, 0f, 1);
-
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable) {
+	public void display(Graphics3D drawable) {
 
 		if(reloading)
 			return;
@@ -280,7 +267,17 @@ public class GameApplicationGL extends CommonApplicationGL {
 		
 		keyModel.draw(gl);
 				
-		gl.glEnable(GL2.GL_LIGHTING);
+		gl.glEnable(GL2.GL_LIGHTING);		
+
+		//gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glEnable(GL.GL_DEPTH_TEST);
+		gl.glDepthMask(true);
+		gl.glDepthFunc(GL.GL_LEQUAL);
+		gl.glDepthRange(0.0f, 1.0f);
+		
+		gl.glColorMaterial(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE);
+		gl.glEnable(GL2.GL_COLOR_MATERIAL);
+		//gl.glEnable(GL2.GL_CULL_FACE);
 		
 		//Draw Scene
 		drawFloor(gl);
@@ -298,7 +295,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 	@Override
 	public void draw(Graphic g) {
 
-		if(reloading) {
+		/*if(reloading) {
 			return;
 		}
 
@@ -316,7 +313,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 			g.setAlpha(50);
 
 			drawScene(g);
-		}
+		}*/
 
 	}
 

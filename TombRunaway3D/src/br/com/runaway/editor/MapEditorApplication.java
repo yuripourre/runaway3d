@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.etyllica.core.event.GUIEvent;
+import br.com.etyllica.core.context.UpdateIntervalListener;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
@@ -18,7 +18,7 @@ import br.com.vite.export.MapExporter;
 import br.com.vite.map.selection.OrthogonalFloorSelection;
 import br.com.vite.tile.layer.ImageTileObject;
 
-public class MapEditorApplication extends MapApplication {
+public class MapEditorApplication extends MapApplication implements UpdateIntervalListener {
 
 	final int tileWidth = 32;
 	final int tileHeight = 32;
@@ -56,7 +56,7 @@ public class MapEditorApplication extends MapApplication {
 				
 		loading = 80;
 
-		updateAtFixedRate(80);
+		updateAtFixedRate(80, this);
 
 		loading = 100;
 	}
@@ -80,22 +80,22 @@ public class MapEditorApplication extends MapApplication {
 	private boolean shiftRight = false;
 
 	@Override
-	public GUIEvent updateKeyboard(KeyEvent event) {
+	public void updateKeyboard(KeyEvent event) {
 		super.updateKeyboard(event);
 
-		if(event.isKeyDown(KeyEvent.TSK_ESC)) {
+		if(event.isKeyDown(KeyEvent.VK_ESC)) {
 			nextApplication = new MainMenu(w, h);
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_SHIFT_LEFT)) {
+		if(event.isKeyDown(KeyEvent.VK_SHIFT_LEFT)) {
 			shiftLeft = true;
-		} else if(event.isKeyUp(KeyEvent.TSK_SHIFT_LEFT)) {
+		} else if(event.isKeyUp(KeyEvent.VK_SHIFT_LEFT)) {
 			shiftLeft = false;			 
 		}
 
-		if(event.isKeyDown(KeyEvent.TSK_SHIFT_LEFT)) {
+		if(event.isKeyDown(KeyEvent.VK_SHIFT_LEFT)) {
 			shiftRight = true;
-		} else if(event.isKeyUp(KeyEvent.TSK_SHIFT_LEFT)) {
+		} else if(event.isKeyUp(KeyEvent.VK_SHIFT_LEFT)) {
 			shiftRight = false;			 
 		}
 
@@ -104,40 +104,38 @@ public class MapEditorApplication extends MapApplication {
 		} else {
 			handleLoadMap(event);
 		}
-
-		return GUIEvent.NONE;
 	}
 
 	private void handleSaveMap(KeyEvent event) {
 
-		if(event.isKeyDown(KeyEvent.TSK_1)) {
+		if(event.isKeyDown(KeyEvent.VK_1)) {
 			MapExporter.export(editor, "map1.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_2)) {
+		if(event.isKeyDown(KeyEvent.VK_2)) {
 			MapExporter.export(editor, "map2.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_3)) {
+		if(event.isKeyDown(KeyEvent.VK_3)) {
 			MapExporter.export(editor, "map3.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_4)) {
+		if(event.isKeyDown(KeyEvent.VK_4)) {
 			MapExporter.export(editor, "map4.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_5)) {
+		if(event.isKeyDown(KeyEvent.VK_5)) {
 			MapExporter.export(editor, "map5.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_6)) {
+		if(event.isKeyDown(KeyEvent.VK_6)) {
 			MapExporter.export(editor, "map6.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_7)) {
+		if(event.isKeyDown(KeyEvent.VK_7)) {
 			MapExporter.export(editor, "map7.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_8)) {
+		if(event.isKeyDown(KeyEvent.VK_8)) {
 			MapExporter.export(editor, "map8.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_9)) {
+		if(event.isKeyDown(KeyEvent.VK_9)) {
 			MapExporter.export(editor, "map9.json");
 		}
-		if(event.isKeyDown(KeyEvent.TSK_0)) {
+		if(event.isKeyDown(KeyEvent.VK_0)) {
 			MapExporter.export(editor, "map10.json");
 		}
 	}
@@ -147,52 +145,52 @@ public class MapEditorApplication extends MapApplication {
 		String path = "";
 		boolean toLoad = false;
 
-		if(event.isKeyDown(KeyEvent.TSK_1)) {
+		if(event.isKeyDown(KeyEvent.VK_1)) {
 			path = "map1.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_2)) {
+		if(event.isKeyDown(KeyEvent.VK_2)) {
 			path = "map2.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_3)) {
+		if(event.isKeyDown(KeyEvent.VK_3)) {
 			path = "map3.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_4)) {
+		if(event.isKeyDown(KeyEvent.VK_4)) {
 			path = "map4.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_5)) {
+		if(event.isKeyDown(KeyEvent.VK_5)) {
 			path = "map5.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_6)) {
+		if(event.isKeyDown(KeyEvent.VK_6)) {
 			path = "map6.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_7)) {
+		if(event.isKeyDown(KeyEvent.VK_7)) {
 			path = "map7.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_8)) {
+		if(event.isKeyDown(KeyEvent.VK_8)) {
 			path = "map8.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_9)) {
+		if(event.isKeyDown(KeyEvent.VK_9)) {
 			path = "map9.json";
 			toLoad = true;
 		}
 		
-		if(event.isKeyDown(KeyEvent.TSK_0)) {
+		if(event.isKeyDown(KeyEvent.VK_0)) {
 			path = "map10.json";
 			toLoad = true;
 		}
@@ -210,21 +208,19 @@ public class MapEditorApplication extends MapApplication {
 			}
 		}		
 		
-		if(event.isKeyDown(KeyEvent.TSK_Z)) {
+		if(event.isKeyDown(KeyEvent.VK_Z)) {
 			editor.setObjectTile(traps.get(0));
-		} else if(event.isKeyDown(KeyEvent.TSK_X)) {
+		} else if(event.isKeyDown(KeyEvent.VK_X)) {
 			editor.setObjectTile(traps.get(1));
 		}
 	}
 
 
 	@Override
-	public GUIEvent updateMouse(PointerEvent event) {				
+	public void updateMouse(PointerEvent event) {				
 		super.updateMouse(event);
 
 		selectionEgyptianMap.updateMouse(event);
-
-		return GUIEvent.NONE;
 	}
 
 	@Override

@@ -2,16 +2,14 @@ package br.com.runaway.menu;
 
 import java.awt.Color;
 
-import javax.media.opengl.GLAutoDrawable;
-
-import br.com.etyllica.animation.listener.OnAnimationFinishListener;
-import br.com.etyllica.animation.scripts.OpacityAnimation;
-import br.com.etyllica.core.event.GUIEvent;
+import br.com.etyllica.core.animation.OnAnimationFinishListener;
+import br.com.etyllica.core.animation.script.OpacityAnimation;
+import br.com.etyllica.core.event.MouseButton;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
-import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.ImageLayer;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
+import br.com.luvia.core.video.Graphics3D;
 
 public class GameOver extends ApplicationGL implements OnAnimationFinishListener {
 
@@ -34,12 +32,10 @@ public class GameOver extends ApplicationGL implements OnAnimationFinishListener
 		loading = 100;
 	}
 	
-	public GUIEvent updateMouse(PointerEvent event) {
-	
+	@Override
+	public void updateMouse(PointerEvent event) {
 		if(event.isButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
 			restartGame();
-		
-		return null;
 	}
 	
 	@Override
@@ -59,19 +55,19 @@ public class GameOver extends ApplicationGL implements OnAnimationFinishListener
 	}
 
 	@Override
-	public void display(GLAutoDrawable arg0) {
+	public void display(Graphics3D gl) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void init(GLAutoDrawable arg0) {
+	public void init(Graphics3D gl) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3,
+	public void reshape(Graphics3D gl, int arg1, int arg2, int arg3,
 			int arg4) {
 		// TODO Auto-generated method stub
 		

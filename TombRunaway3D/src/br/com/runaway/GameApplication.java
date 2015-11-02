@@ -4,13 +4,14 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.etyllica.context.Application;
+import br.com.etyllica.core.context.Application;
+import br.com.etyllica.core.context.UpdateIntervalListener;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.graphics.Graphic;
+import br.com.etyllica.core.linear.PointInt2D;
 import br.com.etyllica.effects.light.LightSource;
 import br.com.etyllica.effects.light.ShadowLayer;
-import br.com.etyllica.linear.PointInt2D;
 import br.com.runaway.collision.CollisionHandler;
 import br.com.runaway.item.Key;
 import br.com.runaway.menu.Congratulations;
@@ -26,7 +27,7 @@ import br.com.vite.export.MapExporter;
 import br.com.vite.tile.Tile;
 import br.com.vite.tile.layer.ImageTileObject;
 
-public class GameApplication extends Application {
+public class GameApplication extends Application implements UpdateIntervalListener {
 
 	public int currentLevel = 1;
 	
@@ -81,7 +82,7 @@ public class GameApplication extends Application {
 
 		loading = 100;
 		
-		updateAtFixedRate(30);
+		updateAtFixedRate(30, this);
 	}
 
 	private void loadMap() {
@@ -152,7 +153,6 @@ public class GameApplication extends Application {
 		torch.setCoordinates(p1x-torch.getW()/2, p1y-torch.getH()/2);
 
 		handler.updateCollision(player);
-
 	}
 
 	private void checkTrapCollisions(long now) {
@@ -228,11 +228,8 @@ public class GameApplication extends Application {
 	}
 
 	@Override
-	public GUIEvent updateKeyboard(KeyEvent event) {
-
+	public void updateKeyboard(KeyEvent event) {
 		controller.handleEvent(event);
-
-		return null;
 	}
 	
 }

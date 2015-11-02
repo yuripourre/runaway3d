@@ -3,7 +3,7 @@ package br.com.runaway.menu;
 import java.awt.Color;
 import java.awt.Font;
 
-import br.com.etyllica.context.load.GenericLoadApplication;
+import br.com.etyllica.core.context.load.GenericLoadApplication;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.layer.ImageLayer;
 import br.com.etyllica.theme.Theme;

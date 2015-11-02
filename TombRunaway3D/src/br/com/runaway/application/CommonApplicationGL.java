@@ -11,9 +11,8 @@ import java.util.Map;
 
 import javax.media.opengl.GL2;
 
-import br.com.abby.util.CameraGL;
 import br.com.etyllica.layer.BufferedLayer;
-import br.com.luvia.core.ApplicationGL;
+import br.com.luvia.core.context.ApplicationGL;
 import br.com.luvia.loader.TextureLoader;
 import br.com.runaway.gl.KeyGL;
 import br.com.runaway.gl.SpikeTrapGL;
@@ -149,7 +148,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		}
 	}
 
-	protected void lookCamera(GL2 gl, CameraGL camera) {
+	/*protected void lookCamera(GL2 gl, Camera3D camera) {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
@@ -159,7 +158,7 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 
 		glu.gluLookAt( camera.getX(), camera.getY(), camera.getZ(), targetx, targety, targetz, 0, 1, 0 );
 
-	}
+	}*/
 
 	protected void drawFloor(GL2 gl) {
 
@@ -208,14 +207,14 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		gl.glTexCoord2d(0, 0);
 		gl.glVertex3d(x*tileSize, 0, y*tileSize);
 
-		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize);
+		gl.glTexCoord2d(0, 1);
+		gl.glVertex3d(x*tileSize, 0, y*tileSize+tileSize);
 
 		gl.glTexCoord2d(1, 1);
 		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
 
-		gl.glTexCoord2d(0, 1);
-		gl.glVertex3d(x*tileSize, 0, y*tileSize+tileSize);
+		gl.glTexCoord2d(1, 0);
+		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize);
 
 		//Back Face
 		gl.glTexCoord2d(0, 0);
@@ -260,24 +259,24 @@ public abstract class CommonApplicationGL extends ApplicationGL {
 		gl.glTexCoord2d(0, 0);
 		gl.glVertex3d(x*tileSize, tileSize, y*tileSize+tileSize);
 
-		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize+tileSize);
-
-		gl.glTexCoord2d(1, 1);
-		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
-
 		gl.glTexCoord2d(0, 1);
 		gl.glVertex3d(x*tileSize, 0, y*tileSize+tileSize);
+		
+		gl.glTexCoord2d(1, 1);
+		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
+		
+		gl.glTexCoord2d(1, 0);
+		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize+tileSize);
 
 		//Upper Face
 		gl.glTexCoord2d(0, 0);
-		gl.glVertex3d(x*tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize, 0, y*tileSize);
 
 		gl.glTexCoord2d(1, 0);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize);
 
 		gl.glTexCoord2d(1, 1);
-		gl.glVertex3d(x*tileSize+tileSize, tileSize, y*tileSize+tileSize);
+		gl.glVertex3d(x*tileSize+tileSize, 0, y*tileSize+tileSize);
 
 		gl.glTexCoord2d(0, 1);
 		gl.glVertex3d(x*tileSize, tileSize, y*tileSize+tileSize);

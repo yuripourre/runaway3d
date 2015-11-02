@@ -33,10 +33,11 @@ public class SpikeTrapGL extends TrapGL {
 	}
 	
 	public void draw(GL2 gl) {
-		hole.simpleDraw(gl);
+		hole.draw(gl);
 		
-		if(trap.isActive())
-			spike.simpleDraw(gl);
+		if(trap.isActive()) {
+			spike.draw(gl);
+		}
 	}
 	
 }

@@ -36,7 +36,8 @@ public class TopViewPlayer extends ActionPlayer implements Drawable, OnAnimation
 	public TopViewPlayer(int x, int y, ActionPlayerListener<TopViewPlayer> listener) {
 		super(x, y, listener);
 
-		this.currentSpeed = 3;
+		this.currentSpeed = 1;
+		this.turnSpeed = 2;
 
 		layer = new AnimatedLayer(x, y, 66, 42, "player/player_walk.png");
 		layer.setAngle(angle);

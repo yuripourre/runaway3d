@@ -7,7 +7,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import br.com.abby.linear.Camera3D;
+import br.com.abby.linear.Camera;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.linear.PointInt2D;
@@ -41,7 +41,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 
 	private TopViewPlayer player;
 
-	private Camera3D camera;
+	private Camera camera;
 
 	private CollisionHandler handler;
 
@@ -134,7 +134,7 @@ public class GameApplicationGL extends CommonApplicationGL {
 		double px = player.getDx()+player.getLayer().getTileW()/2;
 		double py = player.getDy()+player.getLayer().getTileH()/2;
 		
-		camera = new Camera3D(px, 16, py);
+		camera = new Camera(px, 16, py);
 		
 		lifeBar = new LifeBar(player);
 	}
